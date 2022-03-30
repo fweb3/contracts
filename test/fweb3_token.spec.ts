@@ -8,7 +8,7 @@ let Fweb3ContractFactory: ContractFactory,
   owner: SignerWithAddress,
   user1: SignerWithAddress
 
-describe('Fweb3 token deployment', async () => {
+describe('Fweb3 token contract', async () => {
   beforeEach(async () => {
     ;[owner, user1] = await ethers.getSigners()
     Fweb3ContractFactory = await ethers.getContractFactory('Fweb3Token')
