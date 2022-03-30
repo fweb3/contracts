@@ -11,7 +11,7 @@ const deployFweb3Game = async (tokenAddress: string): Promise<string> => {
     await fweb3Game.deployed()
     const fweb3GameAddress: string = fweb3Game.address
     writeAddressToFile('fweb3_game', fweb3GameAddress)
-    console.log('fweb3 game address:', fweb3GameAddress)
+    // console.log('fweb3 game address:', fweb3GameAddress)
     return fweb3GameAddress
   } catch (e) {
     console.error(e)

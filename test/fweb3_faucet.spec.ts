@@ -16,7 +16,7 @@ describe('Fweb3 Faucet Contract', () => {
     fweb3Token = await TokenFactory.deploy()
     await fweb3Token.deployed()
     
-    const FaucetFactory = await ethers.getContractFactory('Fweb3TokenFaucet')
+    const FaucetFactory = await ethers.getContractFactory('Fweb3Faucet')
     fweb3Faucet = await FaucetFactory.deploy(2, fweb3Token.address, 200, 1, 3)
     await fweb3Faucet.deployed()
 
@@ -61,7 +61,7 @@ describe('Fweb3 Faucet Contract', () => {
     it.skip('should not let a drip for a timeout', async () => {
       // TODO: figure me out
     })
-    
+
     it('should need 200 erc20 to drip eth', async () => {
       let error: any;
       try {
@@ -80,12 +80,14 @@ describe('Fweb3 Faucet Contract', () => {
     })
   })
 
-  it('should allow a deposit', async () => {
-    await fweb3Token.increaseAllowance(fweb3Faucet.address, ethers.utils.parseEther('3333'))
-    await fweb3Faucet.depositERC20(ethers.utils.parseEther('333'))
-
-    const erc20Balance = await fweb3Token.balanceOf(fweb3Faucet.address)
-    expect(await _weiToEth(erc20Balance)).to.equal('333.0')
+  describe('erc20 drip', () => {
+    it('should allow erc20 deposit', async () => {
+      await fweb3Token.increaseAllowance(fweb3Faucet.address, ethers.utils.parseEther('3333'))
+      await fweb3Faucet.depositERC20(ethers.utils.parseEther('333'))
+  
+      const erc20Balance = await fweb3Token.balanceOf(fweb3Faucet.address)
+      expect(await _weiToEth(erc20Balance)).to.equal('333.0')
+    })
   })
 })
 

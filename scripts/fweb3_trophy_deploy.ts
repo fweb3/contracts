@@ -13,7 +13,7 @@ const deployFweb3TrophyNFT = async (gameAddress: string): Promise<string> => {
     await fweb3Trophy.deployed()
     const fweb3TrophyAddress = fweb3Trophy.address
     writeAddressToFile('fweb3_trophy', fweb3TrophyAddress)
-    console.log('fweb3 trophy address:', fweb3TrophyAddress)
+    // console.log('fweb3 trophy address:', fweb3TrophyAddress)
     return fweb3TrophyAddress
   } catch (e) {
     console.error(e)

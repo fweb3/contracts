@@ -11,7 +11,7 @@ const deployFweb3Poll = async (tokenAddress: string): Promise<string> => {
     await fweb3Poll.deployed()
     const fweb3PollAddress = fweb3Poll.address
     writeAddressToFile('fweb3_poll', fweb3PollAddress)
-    console.log('fweb3 poll address:', fweb3PollAddress)
+    // console.log('fweb3 poll address:', fweb3PollAddress)
     return fweb3PollAddress
   } catch (e) {
     console.error(e)

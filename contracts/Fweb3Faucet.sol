@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 // import 'hardhat/console.sol';
 
-contract Fweb3TokenFaucet {
+contract Fweb3Faucet {
     ERC20 private erc20DripToken;
     uint256 minERC20ToUseEthFaucet;
     uint256 private erc20DripAmount;
