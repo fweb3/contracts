@@ -5269,6 +5269,11 @@ isstream@~0.1.2:
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
   integrity sha1-R+Y/evVa+m+S4VAOaQ64uFKcCZo=
 
+istanbul-badges-readme@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/istanbul-badges-readme/-/istanbul-badges-readme-1.8.1.tgz#9095e4f651d479cf2d081ee81a53ad7bb06c29de"
+  integrity sha512-I7cEFAFlWc5VB17a71U0TgQbez5+U78F0f4kky1w33L4t3BC4/8gbN1tbmX4LVaki52Op4LrkttpvcdZ6kd/jg==
+
 isurl@^1.0.0-alpha5:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isurl/-/isurl-1.0.0.tgz#b27f4f49f3cdaa3ea44a0a5b7f3462e6edc39d67"

@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 contract Fweb3Game is Ownable {
-    IERC20 private _token;
+    ERC20 private _token;
     address[] judges;
-    address ownerAddress;
 
     struct playerDetails {
         bool isSeekingVerification;
@@ -22,12 +21,11 @@ contract Fweb3Game is Ownable {
     event PlayerVerifiedToWin(address indexed _player, address indexed _judge);
     event PlayerWon(address indexed player);
 
-    constructor(IERC20 token) {
+    constructor(ERC20 token) {
         _token = token;
-        ownerAddress = msg.sender;
     }
 
-    modifier judgeOnly() {
+    modifier onlyJudge() {
         require(isJudge(msg.sender), "Not a judge");
         _;
     }
@@ -37,7 +35,7 @@ contract Fweb3Game is Ownable {
     }
 
     function isJudge(address judge) public view returns (bool) {
-        if (judge == ownerAddress) {
+        if (judge == owner()) {
             return true;
         }
         bool contains = false;
@@ -76,7 +74,7 @@ contract Fweb3Game is Ownable {
         emit PlayerWon(msg.sender);
     }
 
-    function verifyPlayer(address player) public judgeOnly {
+    function verifyPlayer(address player) public onlyJudge {
         players[player].hasBeenVerifiedToWin = true;
         removePlayerFromSeekingVerification(player);
         emit PlayerVerifiedToWin(player, msg.sender);
@@ -105,7 +103,7 @@ contract Fweb3Game is Ownable {
 
     function getPlayer(address player)
         public
-        judgeOnly
+        onlyJudge
         view
         returns (
             bool isSeekingVerification,

@@ -4,8 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-
-import "./lib/Base64.sol";
+import "@openzeppelin/contracts/utils/Base64.sol";
 
 contract Fweb3DiamondNFT is ERC721, Ownable {
     constructor() ERC721("Fweb3 Diamond NFT", "FWEB3DIAMONDNFT") {}
