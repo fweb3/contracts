@@ -7,15 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: install
         run: yarn install
@@ -28,15 +19,3 @@ jobs:
 
       - name: tests
         run: yarn test:ci
-
-  # cypress:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Cypress
-  #       env:
-  #         POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
-  #       uses: cypress-io/github-action@v2
-  #       with:
-  #         build: npm i
-  #         start: npm run dev
