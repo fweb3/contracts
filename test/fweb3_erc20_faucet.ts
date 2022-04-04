@@ -87,6 +87,18 @@ describe('erc20 faucet', () => {
     expect(isBlocked).ok
     expect(error?.message.includes('address blocked')).ok
   })
+
+  it('covers getters and setters', async () => {
+    const singleUse = await fweb3Faucet.getSingleUse()
+    expect(singleUse).not.ok
+    const newSingleUse = await fweb3Faucet.setSingleUse(true)
+    expect(newSingleUse).ok
+    const notUsedFaucet = await fweb3Faucet.getHasUsedFaucet(user1.address)
+    expect(notUsedFaucet).not.ok
+    await fweb3Faucet.dripERC20(user1.address)
+    const hasUsedFaucet = await fweb3Faucet.getHasUsedFaucet(user1.address)
+    expect(hasUsedFaucet).ok
+  })
 })
 
 const _weiToEth = async (_in: BigNumber): Promise<string> => {

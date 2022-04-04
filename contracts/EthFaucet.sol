@@ -56,31 +56,31 @@ contract EthFaucet is Ownable {
     }
 
     function _isfaucetDisabled() private view {
-      require(!faucetDisabled, 'eth drip disabled');
+      require(!faucetDisabled, 'drip disabled');
     }
 
     function _isBlockedAccount(address _account) private view {
-      require(!blockedAccounts[_account], 'address is blocked');
+      require(!blockedAccounts[_account], 'address blocked');
     }
 
     function _hasMinERC20Tokens(address _to) private view {
         require(
             erc20RequiredToken.balanceOf(_to) >= erc20RequiredAmountToUseFaucet,
-            'Not enough required tokens for faucet'
+            'not enough tokens'
         );
     }
 
     function _contractHasEnoughEth() private view {
         require(
             address(this).balance >= ethDripAmount,
-            'Insufficient Faucet Funds'
+            'insufficient funds'
         );
     }
 
     function _isTimedOut(address _to) private view {
         require(
             timeouts[_to] <= block.timestamp,
-            'Too Early for Another Faucet Drop'
+            'to early'
         );
     }
 
