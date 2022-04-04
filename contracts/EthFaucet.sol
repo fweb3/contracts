@@ -27,7 +27,7 @@ contract EthFaucet is Ownable {
         IERC20 _erc20RequiredToken,
         uint256 _erc20RequiredAmountToUseFaucet
     ) {
-        ethDripAmount = _ethDripAmount * 10 ** 18;
+        ethDripAmount = _ethDripAmount * 10**18;
         timeout = _timeout;
         singleUse = _singleUse;
         erc20RequiredToken = _erc20RequiredToken;
@@ -41,9 +41,9 @@ contract EthFaucet is Ownable {
     function dripEth(address payable _to) external {
         _canUseFaucet(_to);
         (bool success, ) = _to.call{value: ethDripAmount}('');
-        require(success, 'Failed to send Ether');
-        timeouts[_to] = block.timestamp;
-        hasUsedFaucet[_to] = true;
+        require(success, 'send failed');
+        setAccountTimeout(_to, timeout);
+        setHasUsedFaucet(_to, true);
     }
 
     function _canUseFaucet(address _to) private view {
@@ -56,87 +56,101 @@ contract EthFaucet is Ownable {
     }
 
     function _isfaucetDisabled() private view {
-      require(!faucetDisabled, 'drip disabled');
+        require(!faucetDisabled, 'disabled');
     }
 
     function _isBlockedAccount(address _account) private view {
-      require(!blockedAccounts[_account], 'address blocked');
+        require(!blockedAccounts[_account], 'blocked');
     }
 
-    function _hasMinERC20Tokens(address _to) private view {
+    function _hasMinERC20Tokens(address _account) private view {
         require(
-            erc20RequiredToken.balanceOf(_to) >= erc20RequiredAmountToUseFaucet,
-            'not enough tokens'
+            erc20RequiredToken.balanceOf(_account) >= erc20RequiredAmountToUseFaucet,
+            'missing erc20'
         );
     }
 
     function _contractHasEnoughEth() private view {
-        require(
-            address(this).balance >= ethDripAmount,
-            'insufficient funds'
-        );
+        require(address(this).balance >= ethDripAmount, 'insufficient funds');
     }
 
-    function _isTimedOut(address _to) private view {
-        require(
-            timeouts[_to] <= block.timestamp,
-            'to early'
-        );
+    function _isTimedOut(address _account) private view {
+        require(getAccountTimeout(_account) <= block.timestamp, 'to early');
     }
 
-    function _checkSingleUse(address _to) private view {
-      require(!singleUse && !hasUsedFaucet[_to], "you have already used faucet");
+    function _checkSingleUse(address _account) private view {
+        if (singleUse) {
+            require(!getHasUsedFaucet(_account), 'already used');
+        }
     }
 
-    function getFaucetDisabled() public view onlyOwner returns (bool) {
-      return faucetDisabled;
+    function getDisabled() external view onlyOwner returns (bool) {
+        return faucetDisabled;
     }
 
-    function setFaucetDisabled(bool _val) public onlyOwner {
-      faucetDisabled = _val;
+    function setDisabled(bool _val) external onlyOwner {
+        faucetDisabled = _val;
     }
 
-    function blockAccount(address _account) public onlyOwner {
-        blockedAccounts[_account] = true;
+    function setBlockedAccount(address _account, bool _val) external onlyOwner {
+        blockedAccounts[_account] = _val;
     }
 
-    function unblockAccount(address _account) public onlyOwner {
-        delete blockedAccounts[_account];
+    function getBlockedAccount(address _account) external view onlyOwner returns (bool) {
+        return blockedAccounts[_account];
     }
 
-    function getEthBalance() external view returns (uint256) {
+    function getBalance() external view returns (uint256) {
         return address(this).balance;
     }
 
-    function getEthDripAmount() public view onlyOwner returns (uint256) {
+    function getDripAmount() external view onlyOwner returns (uint256) {
         return ethDripAmount;
     }
 
-    function setEthDripAmount(uint256 _amount) public onlyOwner {
+    function setDripAmount(uint256 _amount) external onlyOwner {
         ethDripAmount = _amount;
     }
 
-    function getSingleUse() public view returns (bool) {
-      return singleUse;
+    function getSingleUse() external view onlyOwner returns (bool) {
+        return singleUse;
     }
 
-    function setSingleUse(bool _shouldBeSingleUse) public onlyOwner {
-      singleUse = _shouldBeSingleUse;
+    function setSingleUse(bool _shouldBeSingleUse) external onlyOwner {
+        singleUse = _shouldBeSingleUse;
     }
 
-    function getTimeout() public view returns (uint256) {
-      return timeout;
+    function getTimeout() external view returns (uint256) {
+        return timeout;
     }
 
-    function setTimeout(uint256 _timeout) public onlyOwner {
-      timeout = _timeout;
+    function setTimeout(uint256 _timeout) external onlyOwner {
+        timeout = _timeout;
     }
 
-    function getHasUsedFaucet(address _account) public view returns (bool) {
-      return hasUsedFaucet[_account];
+    function getAccountTimeout(address _account)
+        internal
+        view
+        onlyOwner
+        returns (uint256)
+    {
+        return timeouts[_account];
     }
 
-    function setHasUsedFaucet(address _account) public onlyOwner {
-      hasUsedFaucet[_account] = true;
+    function setAccountTimeout(address _account, uint256 _val) internal onlyOwner {
+      timeouts[_account] = block.timestamp + _val;
+    }
+
+    function getHasUsedFaucet(address _account)
+        internal
+        view
+        onlyOwner
+        returns (bool)
+    {
+        return hasUsedFaucet[_account];
+    }
+
+    function setHasUsedFaucet(address _account, bool _val) internal onlyOwner {
+        hasUsedFaucet[_account] = _val;
     }
 }

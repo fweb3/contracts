@@ -8,7 +8,7 @@
     "compile": "yarn hh compile",
     "test": "yarn hh test",
     "node": "yarn hh node",
-    "coverage": "yarn hh coverage",
+    "coverage": "yarn hh compile && yarn hh coverage",
     "coverage:clean": "yarn build && yarn hh coverage",
     "coverage:badges": "istanbul-badges-readme",
     "deploy:local": "SAVE_PATH=local yarn hh run scripts/deploy.ts",
