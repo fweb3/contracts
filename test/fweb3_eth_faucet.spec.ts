@@ -9,25 +9,26 @@ let fweb3Faucet: EthFaucet,
   user1: SignerWithAddress,
   owner: SignerWithAddress
 
-beforeEach(async () => {
-  ;[owner, user1] = await ethers.getSigners()
 
-  const TokenFactory = await ethers.getContractFactory('Fweb3Token')
-  fweb3Token = await TokenFactory.deploy()
-  await fweb3Token.deployed()
 
-  const FaucetFactory = await ethers.getContractFactory('EthFaucet')
-  fweb3Faucet = await FaucetFactory.deploy(
-    100,
-    1,
-    false,
-    fweb3Token.address,
-    100
-  )
-  await fweb3Faucet.deployed()
-})
-
-describe('Eth faucet', () => {
+describe.only('Eth faucet', () => {
+  beforeEach(async () => {
+    ;[owner, user1] = await ethers.getSigners()
+  
+    const TokenFactory = await ethers.getContractFactory('Fweb3Token')
+    fweb3Token = await TokenFactory.deploy()
+    await fweb3Token.deployed()
+  
+    const FaucetFactory = await ethers.getContractFactory('EthFaucet')
+    fweb3Faucet = await FaucetFactory.deploy(
+      ethers.utils.parseEther('0.0000001'),
+      1,
+      false,
+      fweb3Token.address,
+      100
+    )
+    await fweb3Faucet.deployed()
+  })
   it('should drip eth', async () => {
     await owner.sendTransaction({
       to: fweb3Faucet.address,
@@ -36,7 +37,7 @@ describe('Eth faucet', () => {
     await fweb3Token.transfer(user1.address, ethers.utils.parseEther('200'))
     await fweb3Faucet.dripEth(user1.address)
     const balance = await user1.getBalance()
-    expect(balance.toString()).to.equal('10100000000000000000000')
+    expect(balance.toString()).to.equal('10000000000100000000000')
   })
 
   it('should only let the owner set eth drip amount', async () => {
@@ -116,7 +117,6 @@ describe('Eth faucet', () => {
       await fweb3Faucet.dripEth(user1.address)
     } catch (e) {
       error = e
-      console.log(error.message)
     }
     expect(error?.message.includes('too soon')).ok
   })

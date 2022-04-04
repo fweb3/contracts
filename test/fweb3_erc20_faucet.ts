@@ -17,7 +17,7 @@ describe('erc20 faucet', () => {
     await fweb3Token.deployed()
 
     const FaucetFactory = await ethers.getContractFactory('ERC20Faucet')
-    fweb3Faucet = await FaucetFactory.deploy(fweb3Token.address, 1, 30, false)
+    fweb3Faucet = await FaucetFactory.deploy(fweb3Token.address, ethers.utils.parseEther('0.000001'), 30, false)
     await fweb3Faucet.deployed()
 
     await fweb3Token.transfer(
@@ -29,7 +29,7 @@ describe('erc20 faucet', () => {
   it('drips erc20', async () => {
     await fweb3Faucet.dripERC20(user1.address)
     const balance = await fweb3Token.balanceOf(user1.address)
-    expect(balance).to.equal(1)
+    expect(balance.toString()).to.equal('1000000000000')
   })
 
   it('wont allow drip if faucet disabled', async () => {

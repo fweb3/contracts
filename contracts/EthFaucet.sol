@@ -26,7 +26,7 @@ contract EthFaucet is Ownable {
         IERC20 _erc20RequiredToken,
         uint32 _erc20RequiredAmountToUseFaucet
     ) {
-        dripAmount = _dripAmount * 10 ** 18;
+        dripAmount = _dripAmount;
         timeout = _timeout;
         singleUse = _singleUse;
         erc20RequiredToken = _erc20RequiredToken;
