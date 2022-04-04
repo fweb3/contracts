@@ -1,36 +1,32 @@
-import { Fweb3Token } from './../typechain-types/contracts/Fweb3Token';
-import { Fweb3Game } from './../typechain-types/contracts/Fweb3Game';
+import { Fweb3Token } from './../typechain-types/contracts/Fweb3Token'
+import { Fweb3Game } from './../typechain-types/contracts/Fweb3Game'
 import { expect } from 'chai'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { Contract, ContractFactory, ContractReceipt, utils } from 'ethers'
 import { ethers } from 'hardhat'
 
 let fweb3Game: Fweb3Game,
-    user1Fweb3Token: Fweb3Token,
-    user1Fweb3Game: Fweb3Game, // has tokens
-    user2Fweb3Game: Fweb3Game, // no tokens
-    fweb3Token: Fweb3Token,
-    owner: SignerWithAddress,
-    user1: SignerWithAddress,
-    user2: SignerWithAddress,
-    judgeUser: SignerWithAddress
+  user1Fweb3Token: Fweb3Token,
+  user1Fweb3Game: Fweb3Game, // has tokens
+  user2Fweb3Game: Fweb3Game, // no tokens
+  fweb3Token: Fweb3Token,
+  owner: SignerWithAddress,
+  user1: SignerWithAddress,
+  user2: SignerWithAddress,
+  judgeUser: SignerWithAddress
 
 describe('Fweb3 game contract', async () => {
   beforeEach(async () => {
     ;[owner, user1, user2, judgeUser] = await ethers.getSigners()
 
-    const Fweb3TokenFactory = await ethers.getContractFactory(
-      'Fweb3Token'
-    )
+    const Fweb3TokenFactory = await ethers.getContractFactory('Fweb3Token')
     fweb3Token = await Fweb3TokenFactory.deploy()
     await fweb3Token.deployed()
 
     await fweb3Token.transfer(user1.address, utils.parseEther('300'))
     user1Fweb3Token = await fweb3Token.connect(user1)
 
-    const Fweb3GameFactory = await ethers.getContractFactory(
-      'Fweb3Game'
-    )
+    const Fweb3GameFactory = await ethers.getContractFactory('Fweb3Game')
     fweb3Game = await Fweb3GameFactory.deploy(fweb3Token.address)
     await fweb3Game.deployed()
 
@@ -92,7 +88,9 @@ describe('Fweb3 game contract', async () => {
     expect(isJudge).ok
 
     await fweb3Game.removeJudge(judgeUser.address)
-    const isJudgeAfterRemove: boolean = await fweb3Game.isJudge(judgeUser.address)
+    const isJudgeAfterRemove: boolean = await fweb3Game.isJudge(
+      judgeUser.address
+    )
     expect(isJudgeAfterRemove).be.false
 
     let error: any
@@ -113,9 +111,7 @@ describe('Fweb3 game contract', async () => {
 
     const verifyTX = await fweb3Game.verifyPlayer(user1.address)
     const verifyReceipt = await verifyTX.wait()
-    const playerDetailsAfterVerify = await fweb3Game.getPlayer(
-      user1.address
-    )
+    const playerDetailsAfterVerify = await fweb3Game.getPlayer(user1.address)
     expect(playerDetailsAfterVerify.isSeekingVerification).be.false
     expect(playerDetailsAfterVerify.verifiedToWin).ok
     expect(verifyReceipt?.events?.[0].event).to.equal('PlayerVerifiedToWin')

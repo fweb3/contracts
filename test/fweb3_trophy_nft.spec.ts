@@ -20,19 +20,17 @@ let owner: SignerWithAddress,
 describe('Fweb3 Trophy NFT', () => {
   beforeEach(async () => {
     ;[owner, user1, user2] = await ethers.getSigners()
-    const Fweb3ContractFactory =
-      await ethers.getContractFactory('Fweb3Token')
+    const Fweb3ContractFactory = await ethers.getContractFactory('Fweb3Token')
     const fweb3Token: Fweb3Token = await Fweb3ContractFactory.deploy()
     await fweb3Token.deployed()
 
-    const Fweb3GameFactory = await ethers.getContractFactory(
-      'Fweb3Game'
-    )
+    const Fweb3GameFactory = await ethers.getContractFactory('Fweb3Game')
     fweb3Game = await Fweb3GameFactory.deploy(fweb3Token.address)
     await fweb3Game.deployed()
 
-    const Fweb3TrophyNFTFactory =
-      await ethers.getContractFactory('Fweb3TrophyNFT')
+    const Fweb3TrophyNFTFactory = await ethers.getContractFactory(
+      'Fweb3TrophyNFT'
+    )
     fweb3TrohpyNFT = await Fweb3TrophyNFTFactory.deploy(fweb3Game.address)
     await fweb3TrohpyNFT.deployed()
 
@@ -52,7 +50,9 @@ describe('Fweb3 Trophy NFT', () => {
   })
 
   it('mints a trophy', async () => {
-    const user1Web3TrohpyNFT: Fweb3TrophyNFT = await fweb3TrohpyNFT.connect(user1)
+    const user1Web3TrohpyNFT: Fweb3TrophyNFT = await fweb3TrohpyNFT.connect(
+      user1
+    )
     await user1Web3TrohpyNFT.mint()
 
     const tokenURI: string = await fweb3TrohpyNFT.tokenURI(1)

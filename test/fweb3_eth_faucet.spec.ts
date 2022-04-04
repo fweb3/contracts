@@ -17,7 +17,13 @@ beforeEach(async () => {
   await fweb3Token.deployed()
 
   const FaucetFactory = await ethers.getContractFactory('EthFaucet')
-  fweb3Faucet = await FaucetFactory.deploy(100, 1, false, fweb3Token.address, 100)
+  fweb3Faucet = await FaucetFactory.deploy(
+    100,
+    1,
+    false,
+    fweb3Token.address,
+    100
+  )
   await fweb3Faucet.deployed()
 })
 

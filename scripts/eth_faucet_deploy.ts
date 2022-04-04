@@ -8,13 +8,9 @@ const ERC20_MINIMUM = 1
 const TIMEOUT = 30 // min
 const SINGLE_USE = false
 
-const deployEthFaucet = async (
-  erc20TokenAddress: string
-): Promise<string> => {
+const deployEthFaucet = async (erc20TokenAddress: string): Promise<string> => {
   try {
-    const FaucetContract = await hre.ethers.getContractFactory(
-      'EthFaucet'
-    )
+    const FaucetContract = await hre.ethers.getContractFactory('EthFaucet')
     const faucet: EthFaucet = await FaucetContract.deploy(
       DRIP_AMOUNT,
       TIMEOUT,

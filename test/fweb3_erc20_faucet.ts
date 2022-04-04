@@ -11,17 +11,19 @@ let fweb3Faucet: ERC20Faucet,
 describe('erc20 faucet', () => {
   beforeEach(async () => {
     ;[owner, user1] = await ethers.getSigners()
-  
+
     const TokenFactory = await ethers.getContractFactory('Fweb3Token')
     fweb3Token = await TokenFactory.deploy()
     await fweb3Token.deployed()
-  
+
     const FaucetFactory = await ethers.getContractFactory('ERC20Faucet')
     fweb3Faucet = await FaucetFactory.deploy(fweb3Token.address, 1, 30, false)
     await fweb3Faucet.deployed()
 
-    await fweb3Token.transfer(fweb3Faucet.address, ethers.utils.parseEther('666'))
-
+    await fweb3Token.transfer(
+      fweb3Faucet.address,
+      ethers.utils.parseEther('666')
+    )
   })
 
   it('drips erc20', async () => {
