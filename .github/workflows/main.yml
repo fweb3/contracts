@@ -26,9 +26,6 @@ jobs:
       - name: prettier
         run: yarn pretty
 
-      - name: build contracts
-        run: yarn build
-
       - name: tests
         run: yarn test:ci
 
