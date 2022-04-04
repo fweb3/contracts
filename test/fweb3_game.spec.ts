@@ -1,55 +1,43 @@
+import { Fweb3Token } from './../typechain-types/contracts/Fweb3Token';
+import { Fweb3Game } from './../typechain-types/contracts/Fweb3Game';
 import { expect } from 'chai'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { Contract, ContractFactory, ContractReceipt, utils } from 'ethers'
 import { ethers } from 'hardhat'
 
-describe('Fweb3 game contract', async () => {
-  let fweb3Game: Contract,
-    user1Fweb3Token: Contract,
-    user1Fweb3Game: Contract, // has tokens
-    user2Fweb3Game: Contract, // no tokens
-    fweb3Token: Contract,
+let fweb3Game: Fweb3Game,
+    user1Fweb3Token: Fweb3Token,
+    user1Fweb3Game: Fweb3Game, // has tokens
+    user2Fweb3Game: Fweb3Game, // no tokens
+    fweb3Token: Fweb3Token,
     owner: SignerWithAddress,
     user1: SignerWithAddress,
-    user1Address: string,
     user2: SignerWithAddress,
-    user2Address: string,
-    judgeUser: SignerWithAddress,
-    judgeAddress: string
+    judgeUser: SignerWithAddress
 
+describe('Fweb3 game contract', async () => {
   beforeEach(async () => {
     ;[owner, user1, user2, judgeUser] = await ethers.getSigners()
-    user1Address = user1.address
-    user2Address = user2.address
-    judgeAddress = judgeUser.address
 
-    const Fweb3TokenFactory: ContractFactory = await ethers.getContractFactory(
+    const Fweb3TokenFactory = await ethers.getContractFactory(
       'Fweb3Token'
     )
     fweb3Token = await Fweb3TokenFactory.deploy()
     await fweb3Token.deployed()
 
-    // give user1 300 tokens
-    await fweb3Token.transfer(user1Address, utils.parseEther('300'))
+    await fweb3Token.transfer(user1.address, utils.parseEther('300'))
     user1Fweb3Token = await fweb3Token.connect(user1)
 
-    const Fweb3GameFactory: ContractFactory = await ethers.getContractFactory(
+    const Fweb3GameFactory = await ethers.getContractFactory(
       'Fweb3Game'
     )
     fweb3Game = await Fweb3GameFactory.deploy(fweb3Token.address)
     await fweb3Game.deployed()
 
-    // give the game contract tokens for winners
     await fweb3Token.transfer(fweb3Game.address, utils.parseEther('1000000'))
 
     user1Fweb3Game = await fweb3Game.connect(user1)
     user2Fweb3Game = await fweb3Game.connect(user2)
-  })
-  it('checks if an account has > 100 tokens', async () => {
-    const hasEnoughTokens: boolean = await fweb3Game.hasTokens(user1Address)
-    const notEnoughTokens: boolean = await fweb3Game.hasTokens(user2.address)
-    expect(hasEnoughTokens).to.equal(true)
-    expect(notEnoughTokens).be.false
   })
 
   it('errors if player seeks verification without enough tokens', async () => {
@@ -60,84 +48,86 @@ describe('Fweb3 game contract', async () => {
     } catch (e) {
       error = e
     }
-    expect(error.message.includes('Not enough tokens')).be.true
+    expect(error.message.includes('not enough tokens')).ok
   })
   it('allows only owner to set a judge', async () => {
     let error: any
-    await fweb3Game.addJudge(judgeAddress)
-    const userJudgeCheck: boolean = await fweb3Game.isJudge(judgeAddress)
-    expect(userJudgeCheck).be.true
+    await fweb3Game.addJudge(judgeUser.address)
+    const userJudgeCheck: boolean = await fweb3Game.isJudge(judgeUser.address)
+    expect(userJudgeCheck).ok
 
     try {
-      await user1Fweb3Game.addJudge(judgeAddress)
+      await user1Fweb3Game.addJudge(judgeUser.address)
     } catch (e) {
       error = e
     }
-    expect(error.message.includes('Ownable: caller is not the owner')).be.true
+    expect(error.message.includes('Ownable: caller is not the owner')).ok
   })
   it('lets allowed player to seek verification', async () => {
-    const tx: Contract = await user1Fweb3Game.seekVerification()
-    const receipt: ContractReceipt = await tx.wait()
+    const tx = await user1Fweb3Game.seekVerification()
+    const receipt = await tx.wait()
     expect(receipt?.events?.[0].event).to.equal('PlayerSeeksVerification')
 
-    const playerDetails: Contract = await fweb3Game.getPlayer(user1Address)
-    expect(playerDetails.isSeekingVerification).be.true
+    const playerDetails = await fweb3Game.getPlayer(user1.address)
+    expect(playerDetails.isSeekingVerification).ok
   })
 
   it('only judges or owner can check judges', async () => {
-    await fweb3Game.addJudge(judgeAddress)
-    const notJudge: boolean = await fweb3Game.isJudge(user1Address)
-    const isJudge: boolean = await fweb3Game.isJudge(judgeAddress)
+    await fweb3Game.addJudge(judgeUser.address)
+    const notJudge: boolean = await fweb3Game.isJudge(user1.address)
+    const isJudge: boolean = await fweb3Game.isJudge(judgeUser.address)
     expect(notJudge).be.false
-    expect(isJudge).be.true
+    expect(isJudge).ok
 
     const judgeAccountGame: Contract = await fweb3Game.connect(judgeUser)
     const judgeChecksIsJudge: boolean = await judgeAccountGame.isJudge(
-      judgeAddress
+      judgeUser.address
     )
-    expect(judgeChecksIsJudge).be.true
+    expect(judgeChecksIsJudge).ok
   })
 
   it('allows owner remove a judge', async () => {
-    await fweb3Game.addJudge(judgeAddress)
-    const isJudge: boolean = await fweb3Game.isJudge(judgeAddress)
-    expect(isJudge).be.true
+    await fweb3Game.addJudge(judgeUser.address)
+    const isJudge: boolean = await fweb3Game.isJudge(judgeUser.address)
+    expect(isJudge).ok
 
-    await fweb3Game.removeJudge(judgeAddress)
-    const isJudgeAfterRemove: boolean = await fweb3Game.isJudge(judgeAddress)
+    await fweb3Game.removeJudge(judgeUser.address)
+    const isJudgeAfterRemove: boolean = await fweb3Game.isJudge(judgeUser.address)
     expect(isJudgeAfterRemove).be.false
 
     let error: any
     try {
-      await user1Fweb3Game.removeJudge(judgeAddress)
+      await user1Fweb3Game.removeJudge(judgeUser.address)
     } catch (e) {
       error = e
     }
-    expect(error.message.includes('Ownable: caller is not the owner')).be.true
+    expect(error.message.includes('Ownable: caller is not the owner')).ok
   })
 
   it('verifys a player to win', async () => {
-    const tx: Contract = await user1Fweb3Game.seekVerification()
-    const receipt: ContractReceipt = await tx.wait()
-    const playerDetails: Contract = await fweb3Game.getPlayer(user1Address)
-    expect(playerDetails.isSeekingVerification).be.true
+    const tx = await user1Fweb3Game.seekVerification()
+    const receipt = await tx.wait()
+    const playerDetails = await fweb3Game.getPlayer(user1.address)
+    expect(playerDetails.isSeekingVerification).ok
     expect(receipt?.events?.[0].event).to.equal('PlayerSeeksVerification')
 
-    const verifyTX: Contract = await fweb3Game.verifyPlayer(user1Address)
-    const verifyReceipt: ContractReceipt = await verifyTX.wait()
-    const playerDetailsAfterVerify: Contract = await fweb3Game.getPlayer(
-      user1Address
+    const verifyTX = await fweb3Game.verifyPlayer(user1.address)
+    const verifyReceipt = await verifyTX.wait()
+    const playerDetailsAfterVerify = await fweb3Game.getPlayer(
+      user1.address
     )
     expect(playerDetailsAfterVerify.isSeekingVerification).be.false
-    expect(playerDetailsAfterVerify.verifiedToWin).be.true
+    expect(playerDetailsAfterVerify.verifiedToWin).ok
     expect(verifyReceipt?.events?.[0].event).to.equal('PlayerVerifiedToWin')
   })
   it('wins the game', async () => {
-    await fweb3Game.verifyPlayer(user1Address)
-    const tx: Contract = await user1Fweb3Game.win()
-    const receipt: ContractReceipt = await tx.wait()
-    const player: Contract = await fweb3Game.getPlayer(user1Address)
-    expect(player.hasWon).be.true
+    await fweb3Game.verifyPlayer(user1.address)
+    const tx = await user1Fweb3Game.win()
+    const receipt = await tx.wait()
+    const player = await fweb3Game.getPlayer(user1.address)
+    const winner = await fweb3Game.isWinner(user1.address)
+    expect(player.hasWon).ok
+    expect(winner).ok
     expect(receipt?.events?.[1].event).to.equal('PlayerWon')
   })
   it('wont win if not enough tokens', async () => {
@@ -147,7 +137,7 @@ describe('Fweb3 game contract', async () => {
     } catch (e) {
       error = e
     }
-    expect(error.message.includes('Not enough tokens')).be.true
+    expect(error.message.includes('not enough tokens')).ok
   })
   it('wont win if hasnt been verified', async () => {
     let error: any
@@ -156,6 +146,13 @@ describe('Fweb3 game contract', async () => {
     } catch (e) {
       error = e
     }
-    expect(error.message.includes('Not verified by a judge')).be.true
+    expect(error.message.includes('not verified')).ok
+  })
+
+  it('adds and gets judges', async () => {
+    await fweb3Game.addJudge(user1.address)
+    await fweb3Game.addJudge(user2.address)
+    const judges = await fweb3Game.getJudges()
+    expect(judges.length).to.equal(2)
   })
 })

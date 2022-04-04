@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
+
 // import "hardhat/console.sol";
 
 contract Fweb3Game is Ownable {
-    ERC20 private _token;
+    IERC20 private _token;
     address[] judges;
 
     struct playerDetails {
@@ -21,12 +22,12 @@ contract Fweb3Game is Ownable {
     event PlayerVerifiedToWin(address indexed _player, address indexed _judge);
     event PlayerWon(address indexed player);
 
-    constructor(ERC20 token) {
+    constructor(IERC20 token) {
         _token = token;
     }
 
     modifier onlyJudge() {
-        require(isJudge(msg.sender), "Not a judge");
+        require(isJudge(msg.sender), 'not judge');
         _;
     }
 
@@ -47,45 +48,45 @@ contract Fweb3Game is Ownable {
         return contains;
     }
 
-    function hasTokens(address player) public view returns (bool) {
+    function hasTokens(address player) internal view returns (bool) {
         return _token.balanceOf(player) >= 100 * 10**18;
     }
 
-    function hasBeenVerifiedToWin(address player) public view returns (bool) {
+    function hasBeenVerifiedToWin(address player) internal view returns (bool) {
         return players[player].hasBeenVerifiedToWin;
     }
 
-    function hasNotWonBefore(address player) public view returns (bool) {
+    function hasNotWonBefore(address player) internal view returns (bool) {
         return !players[player].hasWon;
     }
 
-    function seekVerification() public {
-        require(hasTokens(msg.sender), "Not enough tokens");
+    function seekVerification() external {
+        require(hasTokens(msg.sender), 'not enough tokens');
         players[msg.sender].isSeekingVerification = true;
         emit PlayerSeeksVerification(msg.sender);
     }
 
-    function win() public {
-        require(hasTokens(msg.sender), "Not enough tokens");
-        require(hasBeenVerifiedToWin(msg.sender), "Not verified by a judge");
-        require(hasNotWonBefore(msg.sender), "Have won before");
+    function win() external {
+        require(hasTokens(msg.sender), 'not enough tokens');
+        require(hasBeenVerifiedToWin(msg.sender), 'not verified');
+        require(hasNotWonBefore(msg.sender), 'has won');
         _token.transfer(msg.sender, 1000 * 10**18);
         players[msg.sender].hasWon = true;
         emit PlayerWon(msg.sender);
     }
 
-    function verifyPlayer(address player) public onlyJudge {
+    function verifyPlayer(address player) external onlyJudge {
         players[player].hasBeenVerifiedToWin = true;
         removePlayerFromSeekingVerification(player);
         emit PlayerVerifiedToWin(player, msg.sender);
     }
 
-    function addJudge(address judge) public onlyOwner {
-        require(!isJudge(judge), "Already a judge");
+    function addJudge(address judge) external onlyOwner {
+        require(!isJudge(judge), 'already judge');
         judges.push(judge);
     }
 
-    function removeJudge(address judge) public onlyOwner {
+    function removeJudge(address judge) external onlyOwner {
         for (uint256 i = 0; i < judges.length; i++) {
             if (judge == judges[i]) {
                 delete judges[i];
@@ -93,7 +94,7 @@ contract Fweb3Game is Ownable {
         }
     }
 
-    function getJudges() public view returns (address[] memory) {
+    function getJudges() external view returns (address[] memory) {
         return judges;
     }
 
@@ -102,16 +103,16 @@ contract Fweb3Game is Ownable {
     }
 
     function getPlayer(address player)
-        public
-        onlyJudge
+        external
         view
+        onlyJudge
         returns (
             bool isSeekingVerification,
             bool verifiedToWin,
             bool hasWon,
             address judgeApprovedBy
         )
-    {   
+    {
         return (
             players[player].isSeekingVerification,
             players[player].hasBeenVerifiedToWin,
