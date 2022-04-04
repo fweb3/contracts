@@ -24,10 +24,10 @@ const config: HardhatUserConfig = {
       url: `https://polygon-mumbai.g.alchemy.com/v2/${MUMBAI_ALCHEMY_API_KEY}`,
       accounts: [MUMBAI_ACCOUNT_PRIVK],
     },
-    polygon: {
-      url: `https://polygon-mainnet.g.alchemy.com/v2/${POLYGON_ALCHEMY_API_KEY}`,
-      accounts: [POLYGON_ACCOUNT_PRIVK],
-    },
+    // polygon: {
+    //   url: `https://polygon-mainnet.g.alchemy.com/v2/${POLYGON_ALCHEMY_API_KEY}`,
+    //   accounts: [POLYGON_ACCOUNT_PRIVK],
+    // },
   },
 }
 
