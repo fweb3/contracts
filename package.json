@@ -3,6 +3,7 @@
   "license": "MIT",
   "scripts": {
     "hh": "npx hardhat",
+    "hh:ci": "npx hardhat --config hardhat.config.ci.ts",
     "clean": "yarn hh clean && rm -rf typechain-types",
     "build": "yarn clean && yarn compile",
     "compile": "yarn hh compile",
@@ -11,6 +12,7 @@
     "coverage": "yarn hh compile && yarn hh coverage",
     "coverage:clean": "yarn build && yarn hh coverage",
     "coverage:badges": "yarn coverage:clean && istanbul-badges-readme",
+    "test:ci": "yarn hh:ci coverage && istanbul-badges-readme",
     "deploy:local": "SAVE_PATH=local yarn hh run scripts/deploy.ts",
     "deploy:mumbai": "SAVE_PATH=mumbai yarn hh run scripts/deploy.ts --network mumbai",
     "deploy:polygon": "SAVE_PATH=polygon yarn hh run scripts/deploy.ts --network polygon",
