@@ -11,7 +11,7 @@ let fweb3Faucet: EthFaucet,
 
 
 
-describe.only('Eth faucet', () => {
+describe('Eth faucet', () => {
   beforeEach(async () => {
     ;[owner, user1] = await ethers.getSigners()
   
