@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/utils/Base64.sol";
+import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/utils/Counters.sol';
+import '@openzeppelin/contracts/utils/Strings.sol';
+import '@openzeppelin/contracts/utils/Base64.sol';
 
 interface Game {
     function isWinner(address player) external view returns (bool);
@@ -17,7 +17,7 @@ contract Fweb3TrophyNFT is ERC721 {
     address private _gameAddress;
 
     constructor(address gameAddress)
-        ERC721("Fweb3 2022 Trophy NFT", "FWEB3TROPHYNFT")
+        ERC721('Fweb3 2022 Trophy NFT', 'FWEB3TROPHYNFT')
     {
         _gameAddress = gameAddress;
     }
@@ -37,14 +37,14 @@ contract Fweb3TrophyNFT is ERC721 {
         string memory url;
 
         if (tokenId <= 333) {
-            tier = "Gold";
-            url = "https://ipfs.io/ipfs/QmYSbJd7ivjrRteXygXiGWck2JHJqPTcAfourK5D6bL7zZ";
+            tier = 'Gold';
+            url = 'https://ipfs.io/ipfs/QmYSbJd7ivjrRteXygXiGWck2JHJqPTcAfourK5D6bL7zZ';
         } else if (tokenId <= 3333) {
-            tier = "Silver";
-            url = "https://ipfs.io/ipfs/QmWf4zTTEayJmWCkKtgHwBK6PmD7yXwDvENKT5gJspLG8C";
+            tier = 'Silver';
+            url = 'https://ipfs.io/ipfs/QmWf4zTTEayJmWCkKtgHwBK6PmD7yXwDvENKT5gJspLG8C';
         } else {
-            tier = "Bronze";
-            url = "https://ipfs.io/ipfs/QmQJBa9wFqB5hWWK7iFrReEwBPfubWjGAmH9Vbb9dMTCay";
+            tier = 'Bronze';
+            url = 'https://ipfs.io/ipfs/QmQJBa9wFqB5hWWK7iFrReEwBPfubWjGAmH9Vbb9dMTCay';
         }
 
         string memory json = Base64.encode(
@@ -61,17 +61,17 @@ contract Fweb3TrophyNFT is ERC721 {
             )
         );
         string memory output = string(
-            abi.encodePacked("data:application/json;base64,", json)
+            abi.encodePacked('data:application/json;base64,', json)
         );
 
         return output;
     }
 
     function mint() public {
-        require(balanceOf(msg.sender) == 0, "Already minted trophy");
-        require(isWinner(msg.sender), "Not a winner");
+        require(balanceOf(msg.sender) == 0, 'Already minted trophy');
+        require(isWinner(msg.sender), 'Not a winner');
         _tokenIds.increment();
-        require(_tokenIds.current() <= 10000, "Too many trophies");
+        require(_tokenIds.current() <= 10000, 'Too many trophies');
         _safeMint(_msgSender(), _tokenIds.current());
     }
 }
