@@ -140,7 +140,7 @@ describe('Eth faucet', async () => {
     expect(singleUse).not.ok
 
     const dripAmount = await fweb3Faucet.getDripAmount()
-    expect(dripAmount).to.equal(ethers.utils.parseEther('1'))
+    expect(dripAmount).to.equal(1)
 
     await fweb3Faucet.setDripAmount(666)
     const dripAmount2 = await fweb3Faucet.getDripAmount()

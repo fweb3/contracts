@@ -29,7 +29,7 @@ describe('erc20 faucet', () => {
   it('drips erc20', async () => {
     await fweb3Faucet.dripERC20(user1.address)
     const balance = await fweb3Token.balanceOf(user1.address)
-    expect(await _weiToEth(balance)).to.equal('1.0')
+    expect(balance).to.equal(1)
   })
 
   it('wont allow drip if faucet disabled', async () => {

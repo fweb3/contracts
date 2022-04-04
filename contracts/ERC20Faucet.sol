@@ -26,7 +26,7 @@ contract ERC20Faucet is Ownable {
         bool _singleUse
     ) {
         erc20Token = _erc20Token;
-        erc20DripAmount = _erc20DripAmount * 10**18;
+        erc20DripAmount = _erc20DripAmount;
         timeout = _timeout;
         singleUse = _singleUse;
     }
