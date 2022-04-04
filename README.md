@@ -20,10 +20,12 @@ yarn test
 # tests with coverage
 yarn coverage
 
-# deployment
 # fill out env vars from example
 yarn hh node
 yarn deploy:local
+
+# use the addresses saved in
+# ./deploy_addresses for the frontend
 
 ```
 
