@@ -5,6 +5,7 @@ import { deployFweb3Token } from './fweb3_token_deploy'
 import { deployEthFaucet } from './eth_faucet_deploy'
 import { deployFweb3Game } from './fweb3_game_deploy'
 import { deployFweb3Poll } from './fweb3_poll_deploy'
+
 ;(async () => {
   try {
     const tokenAddress = await deployFweb3Token()

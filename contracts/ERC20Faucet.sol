@@ -4,8 +4,6 @@ pragma solidity ^0.8.9;
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
-import 'hardhat/console.sol';
-
 contract ERC20Faucet is Ownable {
     ERC20 private erc20Token;
     uint256 private dripAmount;
@@ -38,7 +36,7 @@ contract ERC20Faucet is Ownable {
         require(timeouts[_to] <= block.timestamp, 'too early');
 
         bool success = erc20Token.transfer(_to, dripAmount);
-        
+
         require(success, 'send fail');
 
         timeouts[_to] = block.timestamp + timeout;
