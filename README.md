@@ -21,13 +21,30 @@ yarn test
 yarn coverage
 
 # fill out env vars from example
-yarn hh node
+yarn hh:node
 yarn deploy:local
 
 # use the addresses saved in
 # ./deploy_addresses for the frontend
 
 ```
+
+### Setup for local cross project app development
+
+Note: These contracts are used for the fweb3 faucets and game app. Currently getting the game app connected locally has some challenges due to how we're checking game progress. This will be updated soon to make development a lot easier.
+
+1. Start hardhat node `yarn hh:node`
+2. Fill out env vars.
+  - `LOCAL_ROOT_PRIVK=<hardhat account #0>`
+  - `LOCAL_USER1_PUBKEY=<hardhat account #1>`
+  - `LOCAL_USER2_PUBKEY=<hardhat account #2>`
+3. Deploy contracts to localnet `yarn deploy:local`
+  - Note: All contract addresses are saved in the `deploy_addresses/<env>/<contract>` folder
+4. Open metamask and connect to local rpc on default port
+5. In metamask, and import the private keys for account 1 / 2
+6. Run setup script to fill both faucets and give user1 / 2 some erc20 (fweb3) tokens
+7. Add the local deployed contract addresses from the address folder to the app you're working with.
+8. Profit.
 
 ---
 
