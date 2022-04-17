@@ -1,6 +1,8 @@
 import { ethers } from 'ethers'
 import dotenv from 'dotenv'
 import token from '../artifacts/contracts/Fweb3Token.sol/Fweb3Token.json'
+import adminNft from '../artifacts/contracts/Fweb3AdminNFT.sol/Fweb3AdminNFT.json'
+
 import fs from 'fs-extra'
 
 dotenv.config()
@@ -28,6 +30,16 @@ const { LOCAL_ROOT_PRIVK, LOCAL_USER1_PUBKEY, LOCAL_USER2_PUBKEY } = process.env
       token.abi,
       ownerWallet
     )
+    console.log('creating admin nft for owner')
+    const adminNFTAddress = fs.readFileSync('deploy_addresses/local/fweb3_admin_nft', 'utf-8')
+    const adminNftContract = new ethers.Contract(adminNFTAddress, adminNft.abi, ownerWallet)
+
+    console.log('creating admin nft for user1')
+    const ownerAdminNFTTX = await adminNftContract.mint(ownerWallet.address)
+    await ownerAdminNFTTX.wait()
+
+    const user1AdminNFTTX = await adminNftContract.mint(LOCAL_USER1_PUBKEY)
+    await user1AdminNFTTX.wait()
 
     console.log('sending eth to faucet')
     const sentEthToFaucetTX = await ownerWallet.sendTransaction({
