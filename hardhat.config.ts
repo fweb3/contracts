@@ -4,8 +4,17 @@ import '@nomiclabs/hardhat-waffle'
 import dotenv from 'dotenv'
 import '@typechain/hardhat'
 import 'solidity-coverage'
+// import 'hardhat-ethernal'
+// import hre from 'hardhat'
 
 dotenv.config()
+
+// extendEnvironment((hre) => {
+//   hre.ethernalSync = true
+//   hre.ethernalWorkspace = 'Fweb3'
+//   hre.ethernalTrace = false
+//   hre.ethernalResetOnStart = 'Hardhat'
+// })
 
 const {
   MUMBAI_ACCOUNT_PRIVK = '',
@@ -18,6 +27,7 @@ const config: HardhatUserConfig = {
   solidity: '0.8.9',
   networks: {
     localhost: {
+      loggingEnabled: true,
       url: 'http://localhost:8545',
     },
     mumbai: {

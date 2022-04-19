@@ -29,6 +29,14 @@ yarn deploy:local
 
 ```
 
+### Connect to Ethernal block explorer
+1. Create an account and workspace on tryethernal.com
+2. `npx ethernal login`
+3. `npx ethernal listen`
+
+Notes: If something goes wrong nuke it all
+`yarn hh:clean`
+
 ### Setup for local cross project app development
 
 Note: These contracts are used for the fweb3 faucets and game app. Currently getting the game app connected locally has some challenges due to how we're checking game progress. This will be updated soon to make development a lot easier.

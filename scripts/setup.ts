@@ -23,23 +23,23 @@ const { LOCAL_ROOT_PRIVK, LOCAL_USER1_PUBKEY, LOCAL_USER2_PUBKEY } = process.env
       'deploy_addresses/local/fweb3_erc20_faucet',
       'utf-8'
     )
-    const provider = new ethers.providers.JsonRpcProvider()
+    const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545')
     const ownerWallet = new ethers.Wallet(LOCAL_ROOT_PRIVK || '', provider)
     const contract = new ethers.Contract(
       erc20TokenAddress,
       token.abi,
       ownerWallet
     )
-    console.log('creating admin nft for owner')
-    const adminNFTAddress = fs.readFileSync('deploy_addresses/local/fweb3_admin_nft', 'utf-8')
-    const adminNftContract = new ethers.Contract(adminNFTAddress, adminNft.abi, ownerWallet)
+    // console.log('creating admin nft for owner')
+    // const adminNFTAddress = fs.readFileSync('deploy_addresses/local/fweb3_admin_nft', 'utf-8')
+    // const adminNftContract = new ethers.Contract(adminNFTAddress, adminNft.abi, ownerWallet)
 
-    console.log('creating admin nft for user1')
-    const ownerAdminNFTTX = await adminNftContract.mint(ownerWallet.address)
-    await ownerAdminNFTTX.wait()
+    // console.log('creating admin nft for user1')
+    // const ownerAdminNFTTX = await adminNftContract.mint(ownerWallet.address)
+    // await ownerAdminNFTTX.wait()
 
-    const user1AdminNFTTX = await adminNftContract.mint(LOCAL_USER1_PUBKEY)
-    await user1AdminNFTTX.wait()
+    // const user1AdminNFTTX = await adminNftContract.mint(LOCAL_USER1_PUBKEY)
+    // await user1AdminNFTTX.wait()
 
     console.log('sending eth to faucet')
     const sentEthToFaucetTX = await ownerWallet.sendTransaction({

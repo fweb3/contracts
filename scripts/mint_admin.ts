@@ -1,16 +1,12 @@
 import { ethers } from 'hardhat'
 import { Contract, ContractFactory } from 'ethers'
 import fs from 'fs-extra'
-
-
 ;(async () => {
   try {
     const adminNFTAddress = fs.readFileSync(
       'deploy_addresses/mumbai/fweb3_admin_nft',
       'utf-8'
     )
-
-    const [owner] = await ethers.getSigners()
 
     const Fweb3AdminNFT: ContractFactory = await ethers.getContractFactory(
       'Fweb3AdminNFT'
