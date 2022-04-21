@@ -1,6 +1,7 @@
 {
   "name": "fweb3-contracts",
   "license": "MIT",
+  "main": "index.js",
   "scripts": {
     "hh": "npx hardhat",
     "hh:ci": "npx hardhat --config hardhat.config.ci.ts",
@@ -20,13 +21,15 @@
     "deploy:polygon": "SAVE_PATH=polygon yarn hh run scripts/deploy.ts --network polygon",
     "lint": "npx solhint contracts/**/*.sol --fix",
     "lint:quiet": "yarn lint --quiet",
-    "pretty": "npx prettier scripts test -w"
+    "pretty": "npx prettier scripts test -w",
+    "remix": "npx remixd -s ./contracts --remix-ide https://remix.ethereum.org"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.5",
     "@nomiclabs/hardhat-etherscan": "^3.0.3",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@openzeppelin/contracts": "^4.5.0",
+    "@remix-project/remixd": "^0.6.1",
     "@typechain/ethers-v5": "^10.0.0",
     "@typechain/hardhat": "^6.0.0",
     "@types/chai": "^4.3.0",

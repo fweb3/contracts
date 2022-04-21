@@ -1,4 +1,10 @@
 // SPDX-License-Identifier: MIT
+/**
+* @title Fweb3
+* @dev ContractDescription
+* @custom:dev-run-script contracts/Fweb3Token.sol
+*/
+
 pragma solidity ^0.8.9;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
