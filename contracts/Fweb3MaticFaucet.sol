@@ -45,7 +45,7 @@ contract Fweb3MaticFaucet is Ownable {
 
     function dripMatic(address payable to) external {
         require(!faucetDisabled, 'disabled');
-        require(address(this).balance >= dripAmount, 'insufficient funds');
+        require(address(this).balance >= dripAmount, 'dry');
         require(
             _erc20RequiredToken.balanceOf(to) >= _erc20RequiredAmountToUseFaucet,
             'missing fweb3'

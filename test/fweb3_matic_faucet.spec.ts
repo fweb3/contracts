@@ -39,7 +39,10 @@ describe('Matic faucet', () => {
       value: ethers.utils.parseEther('100'),
     })
 
-    await fweb3Token.transfer(user1.address, ethers.utils.parseEther(MIN_FWEB3.toString()))
+    await fweb3Token.transfer(
+      user1.address,
+      ethers.utils.parseEther(MIN_FWEB3.toString())
+    )
     const before = await user1.getBalance()
     await maticFaucet.dripMatic(user1.address)
     const after = await user1.getBalance()
@@ -49,6 +52,10 @@ describe('Matic faucet', () => {
 
   it('should need 200 fweb3 to use matic faucet', async () => {
     let error: any
+    await owner.sendTransaction({
+      to: maticFaucet.address,
+      value: ethers.utils.parseEther('100'),
+    })
     try {
       await maticFaucet.dripMatic(user1.address)
     } catch (e) {
@@ -96,7 +103,7 @@ describe('Matic faucet', () => {
     } catch (e) {
       error = e
     }
-    expect(error?.message.includes('insufficient funds')).ok
+    expect(error?.message.includes('dry')).ok
   })
 
   it('only drips once when single use enabled', async () => {

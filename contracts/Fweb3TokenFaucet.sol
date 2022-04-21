@@ -35,13 +35,13 @@ contract Fweb3TokenFaucet is Ownable {
     }
 
     function dripFweb3(address to) external {
-        require(!faucetDisabled, 'drip disabled');
-
+        require(!faucetDisabled, 'disabled');
+        require(erc20Token.balanceOf(address(this)) >= dripAmount, 'dry');
         if (singleUse) {
             require(!_hasUsedFaucet[to], 'already used');
         }
 
-        require(_timeouts[to] <= block.timestamp, 'too early');
+        require(_timeouts[to] <= block.timestamp, 'too soon');
 
         bool success = erc20Token.transfer(to, dripAmount);
 

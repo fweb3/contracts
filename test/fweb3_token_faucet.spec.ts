@@ -25,11 +25,13 @@ describe('fweb3 token faucet', () => {
       false
     )
     await fweb3TokenFaucet.deployed()
-
-    fweb3Token.transfer(fweb3TokenFaucet.address, ethers.utils.parseEther('1000000'))
   })
 
   it('drips fweb3', async () => {
+    fweb3Token.transfer(
+      fweb3TokenFaucet.address,
+      ethers.utils.parseEther('1000000')
+    )
     const before = await fweb3Token.balanceOf(user1.address)
     await fweb3TokenFaucet.dripFweb3(user1.address)
     const after = await fweb3Token.balanceOf(user1.address)
@@ -37,19 +39,37 @@ describe('fweb3 token faucet', () => {
     expect(after.toString()).to.equal('100000000000000000000')
   })
 
+  it('errors if dry', async () => {
+    let error: any
+    try {
+      await fweb3TokenFaucet.dripFweb3(user1.address)
+    } catch (e) {
+      error = e
+    }
+    expect(error?.message.includes('dry')).ok
+  })
+
   it('wont drip if faucet disabled', async () => {
     let error: any
+    fweb3Token.transfer(
+      fweb3TokenFaucet.address,
+      ethers.utils.parseEther('1000000')
+    )
     try {
       await fweb3TokenFaucet.setDisableFaucet(true)
       await fweb3TokenFaucet.dripFweb3(user1.address)
     } catch (e) {
       error = e
     }
-    expect(error?.message.includes('drip disabled')).ok
+    expect(error?.message.includes('disabled')).ok
   })
 
   it('wont drip for timeout', async () => {
     let error: any
+    fweb3Token.transfer(
+      fweb3TokenFaucet.address,
+      ethers.utils.parseEther('1000000')
+    )
     try {
       await fweb3TokenFaucet.setTimeout(10)
       await fweb3TokenFaucet.dripFweb3(user1.address)
@@ -57,11 +77,15 @@ describe('fweb3 token faucet', () => {
     } catch (e) {
       error = e
     }
-    expect(error?.message.includes('too early')).ok
+    expect(error?.message.includes('too soon')).ok
   })
 
   it('wont drip more than once if single use enabled', async () => {
     let error: any
+    fweb3Token.transfer(
+      fweb3TokenFaucet.address,
+      ethers.utils.parseEther('1000000')
+    )
     try {
       await fweb3TokenFaucet.setSingleUse(true)
       await fweb3TokenFaucet.dripFweb3(user1.address)
@@ -73,6 +97,10 @@ describe('fweb3 token faucet', () => {
   })
 
   it('drips the set amount', async () => {
+    fweb3Token.transfer(
+      fweb3TokenFaucet.address,
+      ethers.utils.parseEther('1000000')
+    )
     await fweb3TokenFaucet.setDripAmount(666, 10)
     await fweb3TokenFaucet.dripFweb3(user1.address)
     const balance = await fweb3Token.balanceOf(user1.address)
