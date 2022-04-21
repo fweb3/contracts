@@ -10,57 +10,65 @@ import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
 contract ERC20Faucet is Ownable {
-    ERC20 private erc20Token;
-    uint256 private dripAmount;
-    uint256 private timeout;
-    bool private faucetDisabled;
-    bool private singleUse;
+    ERC20 private _erc20Token;
+    uint private _dripAmount;
+    uint private _timeout;
+    bool private _faucetDisabled;
+    bool private _singleUse;
 
-    mapping(address => bool) private hasUsedFaucet;
-    mapping(address => uint256) private timeouts;
+    mapping(address => bool) private _hasUsedFaucet;
+    mapping(address => uint) private _timeouts;
 
     constructor(
-        ERC20 _erc20Token,
-        uint256 _dripAmount,
-        uint256 _timeout,
-        bool _singleUse
+        ERC20 erc20Token,
+        uint dripAmount,
+        uint timeout,
+        bool singleUse
     ) {
-        erc20Token = _erc20Token;
-        dripAmount = _dripAmount;
-        timeout = _timeout;
-        singleUse = _singleUse;
+        _erc20Token = erc20Token;
+        _dripAmount = dripAmount;
+        _timeout = timeout;
+        _singleUse = singleUse;
     }
 
-    function dripERC20(address _to) external {
-        require(!faucetDisabled, 'drip disabled');
+    function dripERC20(address to) external {
+        require(!_faucetDisabled, 'drip disabled');
 
-        if (singleUse) {
-            require(!hasUsedFaucet[_to], 'already used');
+        if (_singleUse) {
+            require(!_hasUsedFaucet[to], 'already used');
         }
 
-        require(timeouts[_to] <= block.timestamp, 'too early');
+        require(_timeouts[to] <= block.timestamp, 'too early');
 
-        bool success = erc20Token.transfer(_to, dripAmount);
+        bool success = _erc20Token.transfer(to, _dripAmount);
 
         require(success, 'send fail');
 
-        timeouts[_to] = block.timestamp + timeout;
-        hasUsedFaucet[_to] = true;
+        _timeouts[to] = block.timestamp + _timeout;
+        _hasUsedFaucet[to] = true;
     }
 
-    function setDisableFaucet(bool _val) external onlyOwner {
-        faucetDisabled = _val;
+    function setDisableFaucet(bool val) external onlyOwner {
+        _faucetDisabled = val;
     }
 
-    function setSingleUse(bool _shouldBeSingleUse) external onlyOwner {
-        singleUse = _shouldBeSingleUse;
+    function getSingleUse() external view onlyOwner returns(bool) {
+        return _singleUse;
     }
 
-    function setTimeout(uint256 _timeout) external onlyOwner {
-        timeout = _timeout;
+    function setSingleUse(bool shouldBeSingleUse) external onlyOwner {
+        _singleUse = shouldBeSingleUse;
     }
 
-    function setDripAmount(uint16 _amount) external onlyOwner {
-        dripAmount = _amount;
+    function setTimeout(uint timeout) external onlyOwner {
+        _timeout = timeout;
+    }
+
+    function getDripAmount() external view onlyOwner returns (uint) {
+        return _dripAmount;
+    }
+
+    function setDripAmount(uint amount) external onlyOwner {
+        _dripAmount = amount;
     }
 }

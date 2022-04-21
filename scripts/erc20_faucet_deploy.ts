@@ -3,8 +3,8 @@ import { ERC20Faucet } from '../typechain-types'
 
 import { writeAddressToFile } from './utils'
 
-const DRIP_AMOUNT = 10000000000000 // wei
-const TIMEOUT = 30 // min
+const DRIP_AMOUNT = 300 // eth
+const TIMEOUT = 1 // min
 const SINGLE_USE = false
 
 const deployERC20Faucet = async (
