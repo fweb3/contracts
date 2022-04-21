@@ -43,7 +43,7 @@ Note: These contracts are used for the fweb3 faucets and game app. Currently get
 
 1. Start hardhat node `yarn hh:node`
 2. Fill out env vars.
-  - `LOCAL_ROOT_PRIVK=<hardhat account #0>`
+  - `LOCAL_OWNER_PRIVK=<hardhat account #0>`
   - `LOCAL_USER1_PUBKEY=<hardhat account #1>`
   - `LOCAL_USER2_PUBKEY=<hardhat account #2>`
 3. Deploy contracts to localnet `yarn deploy:local`
