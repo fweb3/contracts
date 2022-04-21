@@ -12,6 +12,7 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 contract ERC20Faucet is Ownable {
     ERC20 private _erc20Token;
     uint private _dripAmount;
+    uint private _decimals;
     uint private _timeout;
     bool private _faucetDisabled;
     bool private _singleUse;
@@ -22,11 +23,13 @@ contract ERC20Faucet is Ownable {
     constructor(
         ERC20 erc20Token,
         uint dripAmount,
+        uint decimals,
         uint timeout,
         bool singleUse
     ) {
         _erc20Token = erc20Token;
         _dripAmount = dripAmount;
+        _decimals = decimals;
         _timeout = timeout;
         _singleUse = singleUse;
     }
@@ -40,7 +43,7 @@ contract ERC20Faucet is Ownable {
 
         require(_timeouts[to] <= block.timestamp, 'too early');
 
-        bool success = _erc20Token.transfer(to, _dripAmount);
+        bool success = _erc20Token.transfer(to, _dripAmount * 10 ** _decimals);
 
         require(success, 'send fail');
 
@@ -65,10 +68,14 @@ contract ERC20Faucet is Ownable {
     }
 
     function getDripAmount() external view onlyOwner returns (uint) {
-        return _dripAmount;
+        return _dripAmount * 10 ** _decimals;
     }
 
     function setDripAmount(uint amount) external onlyOwner {
         _dripAmount = amount;
+    }
+
+    function setDecimals(uint decimals) external onlyOwner {
+        _decimals = decimals;
     }
 }

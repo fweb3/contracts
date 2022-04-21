@@ -3,7 +3,8 @@ import { ERC20Faucet } from '../typechain-types'
 
 import { writeAddressToFile } from './utils'
 
-const DRIP_AMOUNT = 300 // eth
+const DRIP_AMOUNT = 3
+const DECIMALS = 10
 const TIMEOUT = 1 // min
 const SINGLE_USE = false
 
@@ -16,6 +17,7 @@ const deployERC20Faucet = async (
     const faucet: ERC20Faucet = await FaucetContract.deploy(
       erc20TokenAddress,
       DRIP_AMOUNT,
+      DECIMALS,
       TIMEOUT,
       SINGLE_USE
     )

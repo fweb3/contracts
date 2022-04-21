@@ -22,7 +22,8 @@
     "lint": "npx solhint contracts/**/*.sol --fix",
     "lint:quiet": "yarn lint --quiet",
     "pretty": "npx prettier scripts test -w",
-    "remix": "npx remixd -s ./contracts --remix-ide https://remix.ethereum.org"
+    "remix": "npx remixd -s ./contracts --remix-ide https://remix.ethereum.org",
+    "reset": "yarn deploy:local && yarn setup:local"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.5",

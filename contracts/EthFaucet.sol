@@ -6,68 +6,75 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
 contract EthFaucet is Ownable {
-    IERC20 private erc20RequiredToken;
-    uint256 private erc20RequiredAmountToUseFaucet;
-    uint256 private dripAmount;
-    uint256 private timeout;
+    IERC20 private _erc20RequiredToken;
+    uint private _erc20RequiredAmountToUseFaucet;
+    uint public decimals;
+    uint public dripAmount;
+    uint private _timeout;
     bool public faucetDisabled;
-    bool private singleUse;
+    bool public singleUse;
 
-    mapping(address => bool) private hasUsedFaucet;
-    mapping(address => uint256) private timeouts;
+    mapping(address => bool) private _hasUsedFaucet;
+    mapping(address => uint) private _timeouts;
 
-    event ReceivedEth(address, uint256);
+    event ReceivedEth(address, uint);
 
     constructor(
-        uint256 _dripAmount,
-        uint32 _timeout,
+        uint _dripAmount,
+        uint _decimals,
+        uint timeout,
         bool _singleUse,
-        IERC20 _erc20RequiredToken,
-        uint32 _erc20RequiredAmountToUseFaucet
+        IERC20 erc20RequiredToken,
+        uint erc20RequiredAmountToUseFaucet
     ) {
         dripAmount = _dripAmount;
-        timeout = _timeout;
+        decimals = _decimals;
+        _timeout = timeout;
         singleUse = _singleUse;
-        erc20RequiredToken = _erc20RequiredToken;
-        erc20RequiredAmountToUseFaucet = _erc20RequiredAmountToUseFaucet;
+        _erc20RequiredToken = erc20RequiredToken;
+        _erc20RequiredAmountToUseFaucet = erc20RequiredAmountToUseFaucet;
     }
 
     receive() external payable {
         emit ReceivedEth(msg.sender, msg.value);
     }
 
-    function dripEth(address payable _to) external {
+    function dripEth(address payable to) external {
         require(!faucetDisabled, 'disabled');
         require(address(this).balance >= dripAmount, 'insufficient funds');
         require(
-            erc20RequiredToken.balanceOf(_to) >= erc20RequiredAmountToUseFaucet,
+            _erc20RequiredToken.balanceOf(to) >= _erc20RequiredAmountToUseFaucet,
             'missing erc20'
         );
         if (singleUse) {
-            require(!hasUsedFaucet[_to], 'already used');
+            require(!_hasUsedFaucet[to], 'already used');
         }
-        require(timeouts[_to] <= block.timestamp, 'too soon');
+        require(_timeouts[to] <= block.timestamp, 'too soon');
 
-        (bool success, ) = _to.call{value: dripAmount}('');
+        (bool success, ) = to.call{value: dripAmount * 10 ** decimals}('');
 
         require(success, 'send failed');
-        timeouts[_to] = block.timestamp + timeout;
-        hasUsedFaucet[_to] = true;
+        _timeouts[to] = block.timestamp + _timeout;
+        _hasUsedFaucet[to] = true;
     }
 
-    function setDisabled(bool _val) external onlyOwner {
-        faucetDisabled = _val;
+    function setDisabled(bool val) external onlyOwner {
+        faucetDisabled = val;
     }
 
-    function setSingleUse(bool _shouldBeSingleUse) external onlyOwner {
-        singleUse = _shouldBeSingleUse;
+    function setSingleUse(bool shouldBeSingleUse) external onlyOwner {
+        singleUse = shouldBeSingleUse;
     }
 
-    function setTimeout(uint256 _timeout) external onlyOwner {
-        timeout = _timeout;
+    function setTimeout(uint timeout) external onlyOwner {
+        _timeout = timeout;
     }
 
-    function setDripAmount(uint256 _amount) external onlyOwner {
-        dripAmount = _amount * 10 ** 18;
+    function setDripAmount(uint amount) external onlyOwner {
+        dripAmount = amount;
     }
-}
+
+    function setDripDecimals(uint _decimals) external onlyOwner {
+        decimals = _decimals;
+    }
+ }
