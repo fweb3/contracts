@@ -5,8 +5,7 @@
   "scripts": {
     "hh": "npx hardhat",
     "hh:ci": "npx hardhat --config hardhat.config.ci.ts",
-    "hh:clean": "yarn hh clean && rm -rf typechain-types",
-    "hh:build": "yarn clean && yarn compile",
+    "hh:build": "yarn hh clean && rm -rf cache && yarn hh compile",
     "hh:compile": "yarn hh compile",
     "hh:test": "yarn hh test",
     "hh:node": "yarn hh node",

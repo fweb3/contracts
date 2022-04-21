@@ -11,53 +11,46 @@ const { LOCAL_ROOT_PRIVK, LOCAL_USER1_PUBKEY, LOCAL_USER2_PUBKEY } = process.env
 
 ;(async () => {
   try {
-    const erc20TokenAddress = fs.readFileSync(
+    const fweb3TokenAddress = fs.readFileSync(
       'deploy_addresses/local/fweb3_token',
       'utf-8'
     )
-    const ethFaucetAddress = fs.readFileSync(
-      'deploy_addresses/local/fweb3_eth_faucet',
+    const maticFaucetAddress = fs.readFileSync(
+      'deploy_addresses/local/fweb3_matic_faucet',
       'utf-8'
     )
-    const erc20FaucetAddress = fs.readFileSync(
-      'deploy_addresses/local/fweb3_erc20_faucet',
+    const fweb3TokenFaucetAddress = fs.readFileSync(
+      'deploy_addresses/local/fweb3_token_faucet',
       'utf-8'
     )
     const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545')
     const ownerWallet = new ethers.Wallet(LOCAL_ROOT_PRIVK || '', provider)
     const contract = new ethers.Contract(
-      erc20TokenAddress,
+      fweb3TokenAddress,
       token.abi,
       ownerWallet
     )
 
-    console.log('sending eth to faucet')
-    const sentEthToFaucetTX = await ownerWallet.sendTransaction({
-      to: ethFaucetAddress,
-      value: ethers.utils.parseEther('10'),
+    console.log('sending matic to faucet')
+    const sendMaticToFaucetTX = await ownerWallet.sendTransaction({
+      to: maticFaucetAddress,
+      value: ethers.utils.parseEther('69'),
     })
-    await sentEthToFaucetTX.wait()
+    await sendMaticToFaucetTX.wait()
 
-    console.log('sending erc20 to faucet')
-    const sendERC20ToFaucet = await contract.transfer(
-      erc20FaucetAddress,
+    console.log('sending fweb3 to faucet')
+    const fweb3ToFaucetTX = await contract.transfer(
+      fweb3TokenFaucetAddress,
       ethers.utils.parseEther('69420')
     )
-    await sendERC20ToFaucet.wait()
+    await fweb3ToFaucetTX.wait()
 
-    console.log('sending erc20 to user1')
-    const sentErc20Tx1 = await contract.transfer(
+    console.log('sending fweb3 to user1')
+    const fweb3TransferTX = await contract.transfer(
       LOCAL_USER1_PUBKEY,
-      ethers.utils.parseEther('666')
+      ethers.utils.parseEther('300')
     )
-    await sentErc20Tx1.wait()
-
-    console.log('sending erc20 to user2')
-    const sentErc20Tx2 = await contract.transfer(
-      LOCAL_USER2_PUBKEY,
-      ethers.utils.parseEther('666')
-    )
-    await sentErc20Tx2.wait()
+    await fweb3TransferTX.wait()
 
     console.log('done')
   } catch (e) {

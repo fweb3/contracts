@@ -1,15 +1,19 @@
 // SPDX-License-Identifier: UNLICENSED
-
+/**
+* @title Fweb3MaticFaucet
+* @dev ContractDescription
+* @custom:dev-run-script contracts/Fweb3MaticFaucet.sol
+*/
 pragma solidity ^0.8.9;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
-contract EthFaucet is Ownable {
+contract Fweb3MaticFaucet is Ownable {
     IERC20 private _erc20RequiredToken;
     uint private _erc20RequiredAmountToUseFaucet;
-    uint public decimals;
     uint public dripAmount;
+    uint public decimals;
     uint private _timeout;
     bool public faucetDisabled;
     bool public singleUse;
@@ -25,33 +29,33 @@ contract EthFaucet is Ownable {
         uint timeout,
         bool _singleUse,
         IERC20 erc20RequiredToken,
-        uint erc20RequiredAmountToUseFaucet
+        uint requiredFweb3ForFaucet
     ) {
-        dripAmount = _dripAmount;
+        dripAmount = _dripAmount * 10 ** _decimals;
         decimals = _decimals;
         _timeout = timeout;
         singleUse = _singleUse;
         _erc20RequiredToken = erc20RequiredToken;
-        _erc20RequiredAmountToUseFaucet = erc20RequiredAmountToUseFaucet;
+        _erc20RequiredAmountToUseFaucet = requiredFweb3ForFaucet;
     }
 
     receive() external payable {
         emit ReceivedEth(msg.sender, msg.value);
     }
 
-    function dripEth(address payable to) external {
+    function dripMatic(address payable to) external {
         require(!faucetDisabled, 'disabled');
         require(address(this).balance >= dripAmount, 'insufficient funds');
         require(
             _erc20RequiredToken.balanceOf(to) >= _erc20RequiredAmountToUseFaucet,
-            'missing erc20'
+            'missing fweb3'
         );
         if (singleUse) {
             require(!_hasUsedFaucet[to], 'already used');
         }
         require(_timeouts[to] <= block.timestamp, 'too soon');
 
-        (bool success, ) = to.call{value: dripAmount * 10 ** decimals}('');
+        (bool success, ) = to.call{value: dripAmount}('');
 
         require(success, 'send failed');
         _timeouts[to] = block.timestamp + _timeout;
@@ -70,11 +74,7 @@ contract EthFaucet is Ownable {
         _timeout = timeout;
     }
 
-    function setDripAmount(uint amount) external onlyOwner {
-        dripAmount = amount;
-    }
-
-    function setDripDecimals(uint _decimals) external onlyOwner {
-        decimals = _decimals;
+    function setDripAmount(uint amount, uint _decimals) external onlyOwner {
+        dripAmount = amount * 10 ** _decimals;
     }
  }

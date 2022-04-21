@@ -9,3 +9,4 @@ tmp
 .vscode
 .DS_Store
 typechain-types
+.deps

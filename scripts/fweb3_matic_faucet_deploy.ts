@@ -1,20 +1,18 @@
 import hre from 'hardhat'
-import { EthFaucet } from '../typechain-types'
-import { ethers } from 'ethers'
 import { writeAddressToFile } from './utils'
 
-const DRIP_AMOUNT = 6
-const DECIMALS = 10
-const ERC20_MINIMUM = 1
-const TIMEOUT = 30 // min
+const DRIP_AMOUNT = 1
+const DECIMAL = 10
+const ERC20_MINIMUM = 300
+const TIMEOUT = 1 // min
 const SINGLE_USE = false
 
 const deployEthFaucet = async (erc20TokenAddress: string): Promise<string> => {
   try {
-    const FaucetContract = await hre.ethers.getContractFactory('EthFaucet')
-    const faucet: EthFaucet = await FaucetContract.deploy(
+    const FaucetContract = await hre.ethers.getContractFactory('Fweb3MaticFaucet')
+    const faucet = await FaucetContract.deploy(
       DRIP_AMOUNT,
-      DECIMALS,
+      DECIMAL,
       TIMEOUT,
       SINGLE_USE,
       erc20TokenAddress,
@@ -23,7 +21,7 @@ const deployEthFaucet = async (erc20TokenAddress: string): Promise<string> => {
 
     await faucet.deployed()
     const faucetAddress: string = faucet.address
-    writeAddressToFile('fweb3_eth_faucet', faucetAddress)
+    writeAddressToFile('fweb3_matic_faucet', faucetAddress)
     return faucetAddress
   } catch (e) {
     console.error(e)
