@@ -11,5 +11,10 @@ import { readAddressFromFile } from './utils'
     maticFaucetAddress,
     fweb3FaucetAddress,
   }
+  console.log({
+    fweb3TokenAddress,
+    maticFaucetAddress,
+    fweb3FaucetAddress,
+  })
   return faucets
 })()
