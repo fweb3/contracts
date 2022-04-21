@@ -59,13 +59,13 @@ const { LOCAL_OWNER_PRIVK, LOCAL_USER1_PUBKEY } = process.env
       ethers.utils.parseEther('69420')
     )
     await fweb3ToFaucetTX.wait()
-    // 9703877935042711017895
-    console.log('sending fweb3 to user1')
-    const fweb3TransferTX = await fweb3TokenContract.transfer(
-      LOCAL_USER1_PUBKEY,
-      ethers.utils.parseEther('300')
-    )
-    await fweb3TransferTX.wait()
+
+    // console.log('sending fweb3 to user1')
+    // const fweb3TransferTX = await fweb3TokenContract.transfer(
+    //   LOCAL_USER1_PUBKEY,
+    //   ethers.utils.parseEther('300')
+    // )
+    // await fweb3TransferTX.wait()
 
     const fweb3TokenEndBalance = await fweb3TokenContract.balanceOf(
       ownerWallet.address
