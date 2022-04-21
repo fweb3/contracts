@@ -31,4 +31,4 @@ const deployFweb3Faucet = async (
   }
 }
 
-export { deployFweb3Faucet as deployERC20Faucet }
+export { deployFweb3Faucet }

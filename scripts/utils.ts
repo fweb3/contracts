@@ -6,4 +6,10 @@ const writeAddressToFile = (fileName: string, address: string): void => {
   console.log(`wrote ${fileName} address to ${path}`)
 }
 
-export { writeAddressToFile }
+const readAddressFromFile = (fileName: string): string => {
+  const path = `deploy_addresses/${process.env.SAVE_PATH}/${fileName}`
+  const address = fs.readFileSync(path, 'utf-8')
+  return address
+}
+
+export { writeAddressToFile, readAddressFromFile }

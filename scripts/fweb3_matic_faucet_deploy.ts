@@ -7,7 +7,7 @@ const ERC20_MINIMUM = 300
 const TIMEOUT = 1 // min
 const SINGLE_USE = false
 
-const deployEthFaucet = async (erc20TokenAddress: string): Promise<string> => {
+const deployMaticFaucet = async (erc20TokenAddress: string): Promise<string> => {
   try {
     const FaucetContract = await hre.ethers.getContractFactory('Fweb3MaticFaucet')
     const faucet = await FaucetContract.deploy(
@@ -29,4 +29,4 @@ const deployEthFaucet = async (erc20TokenAddress: string): Promise<string> => {
   }
 }
 
-export { deployEthFaucet }
+export { deployMaticFaucet }

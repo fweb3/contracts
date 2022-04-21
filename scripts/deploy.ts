@@ -1,11 +1,11 @@
-import { deployFweb3DiamondNFT } from './fweb3_diamond_nft_deploy'
-import { deployFweb3TrophyNFT } from './fweb3_trophy_deploy'
-import { deployERC20Faucet } from './fweb3_faucet_deploy'
-import { deployFweb3Token } from './fweb3_token_deploy'
 import { deployFweb3AdminNFT } from './fweb3_admin_nft'
-import { deployEthFaucet } from './fweb3_matic_faucet_deploy'
+import { deployFweb3DiamondNFT } from './fweb3_diamond_nft_deploy'
 import { deployFweb3Game } from './fweb3_game_deploy'
 import { deployFweb3Poll } from './fweb3_poll_deploy'
+import { deployFweb3Token } from './fweb3_token_deploy'
+import { deployFweb3Faucet } from './fweb3_faucet_deploy'
+import { deployFweb3TrophyNFT } from './fweb3_trophy_deploy'
+import { deployMaticFaucet } from './fweb3_matic_faucet_deploy'
 
 // import hre from 'hardhat'
 // const _sendToEthernal = async (addresses: any) => {
@@ -44,8 +44,8 @@ import { deployFweb3Poll } from './fweb3_poll_deploy'
     const diamondNft = await deployFweb3DiamondNFT()
     const trophyNft = await deployFweb3TrophyNFT(gameAddress)
     const adminNft = await deployFweb3AdminNFT()
-    const maticFaucetAddress = await deployEthFaucet(fweb3TokenAddress)
-    const fweb3FaucetAddress = await deployERC20Faucet(fweb3TokenAddress)
+    const maticFaucetAddress = await deployMaticFaucet(fweb3TokenAddress)
+    const fweb3FaucetAddress = await deployFweb3Faucet(fweb3TokenAddress)
 
     const addresses = {
       fweb3TokenAddress,

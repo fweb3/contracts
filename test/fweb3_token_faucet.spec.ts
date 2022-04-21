@@ -1,6 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
-import { ethers } from 'hardhat'
+import hre, { ethers } from 'hardhat'
 import type { Fweb3TokenFaucet, Fweb3Token } from '../typechain-types'
 
 let fweb3TokenFaucet: Fweb3TokenFaucet,
@@ -105,5 +105,18 @@ describe('fweb3 token faucet', () => {
     await fweb3TokenFaucet.dripFweb3(user1.address)
     const balance = await fweb3Token.balanceOf(user1.address)
     expect(balance).to.equal('6660000000000')
+  })
+
+  it('can receive eth', async () => {
+    const beforeBalance = await fweb3TokenFaucet.provider.getBalance(fweb3TokenFaucet.address)
+    const tx = await owner.sendTransaction({
+      to: fweb3TokenFaucet.address,
+      value: ethers.utils.parseEther('666')
+    })
+    await tx.wait()
+    const afterBalance = await fweb3TokenFaucet.provider.getBalance(
+      fweb3TokenFaucet.address
+    )
+    expect(afterBalance.sub(beforeBalance)).to.equal('666000000000000000000')
   })
 })
