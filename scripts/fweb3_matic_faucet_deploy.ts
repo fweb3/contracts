@@ -4,10 +4,10 @@ import { writeAddressToFile } from './utils'
 const DRIP_AMOUNT = 1
 const DECIMAL = 17
 const ERC20_MINIMUM = 300
-const TIMEOUT = 1 // min
-const SINGLE_USE = false
+const TIMEOUT = 1440 // min
+const SINGLE_USE = true
 
-const deployMaticFaucet = async (erc20TokenAddress: string): Promise<string> => {
+const deployMaticFaucet = async (fweb3TokenAddress: string): Promise<string> => {
   try {
     const FaucetContract = await hre.ethers.getContractFactory('Fweb3MaticFaucet')
     const faucet = await FaucetContract.deploy(
@@ -15,7 +15,7 @@ const deployMaticFaucet = async (erc20TokenAddress: string): Promise<string> => 
       DECIMAL,
       TIMEOUT,
       SINGLE_USE,
-      erc20TokenAddress,
+      fweb3TokenAddress,
       ERC20_MINIMUM
     )
 

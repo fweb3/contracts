@@ -119,4 +119,28 @@ describe('fweb3 token faucet', () => {
     )
     expect(afterBalance.sub(beforeBalance)).to.equal('666000000000000000000')
   })
+
+  it('should let owner set admin role', async () => {
+    const roleBytes = ethers.utils.toUtf8Bytes('ADMIN_ROLE')
+    const roleHash = ethers.utils.keccak256(roleBytes)
+    await fweb3TokenFaucet.grantRole(roleHash, user1.address)
+    const hasRole = fweb3TokenFaucet.hasRole(roleHash, user1.address)
+    expect(hasRole).ok
+  })
+
+  it('should not drip for a cooldown peroid', async () => {
+    let error: any
+    fweb3Token.transfer(
+      fweb3TokenFaucet.address,
+      ethers.utils.parseEther('1000000')
+    )
+    try {
+      await fweb3TokenFaucet.setCooldownEnabled(true)
+      await fweb3TokenFaucet.dripFweb3(user1.address)
+      await fweb3TokenFaucet.dripFweb3(user1.address)
+    } catch (e) {
+      error = e
+    }
+    expect(error?.message.includes('cooldown')).ok
+  })
 })

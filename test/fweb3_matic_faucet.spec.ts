@@ -74,8 +74,14 @@ describe('Matic faucet', () => {
     }
     expect(error?.message.includes('disabled')).ok
   })
-
-  it('should only let owner set drip amount', async () => {
+  it('should let owner set admin role', async () => {
+    const roleBytes = ethers.utils.toUtf8Bytes('ADMIN_ROLE')
+    const roleHash = ethers.utils.keccak256(roleBytes)
+    await maticFaucet.grantRole(roleHash, user1.address)
+    const hasRole = maticFaucet.hasRole(roleHash, user1.address)
+    expect(hasRole).ok
+  })
+  it('should only let admin set drip amount', async () => {
     let error: any
     const before = (await maticFaucet.dripAmount()).toString()
     await maticFaucet.setDripAmount(6, 10)
@@ -88,9 +94,8 @@ describe('Matic faucet', () => {
     } catch (e) {
       error = e
     }
-    expect(error?.message.includes('Ownable: caller is not the owner')).be.true
+    expect(error?.message.includes('missing role')).be.true
   })
-
   it('should error if drip exceeds balance', async () => {
     let error: any
     await owner.sendTransaction({
@@ -137,5 +142,22 @@ describe('Matic faucet', () => {
       error = e
     }
     expect(error?.message.includes('too soon')).ok
+  })
+
+  it('should not drip for a cooldown peroid', async () => {
+    let error: any
+    try {
+      await owner.sendTransaction({
+        to: maticFaucet.address,
+        value: ethers.utils.parseEther('666'),
+      })
+      await fweb3Token.transfer(user1.address, ethers.utils.parseEther('200'))
+      await maticFaucet.setCooldownEnabled(true)
+      await maticFaucet.dripMatic(user1.address)
+      await maticFaucet.dripMatic(user1.address)
+    } catch (e) {
+      error = e
+    }
+    expect(error?.message.includes('cooldown')).ok
   })
 })
