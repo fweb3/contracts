@@ -2,7 +2,7 @@ import hre from 'hardhat'
 import { writeAddressToFile } from './utils'
 
 const DRIP_AMOUNT = 1
-const DECIMAL = 10
+const DECIMAL = 17
 const ERC20_MINIMUM = 300
 const TIMEOUT = 1 // min
 const SINGLE_USE = false
