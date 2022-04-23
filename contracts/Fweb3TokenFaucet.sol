@@ -19,21 +19,19 @@ contract Fweb3TokenFaucet is Ownable, AccessControl {
     uint256 public timeout;
     bool public faucetDisabled;
     bool public singleUse;
-    uint256 private _cooldown;
-    uint256 private _lastDrip;
-    bool private _cooldownEnabled;
+    uint256 public holderLimit;
+    bool public useHolderLimit;
 
     mapping(address => bool) private _hasUsedFaucet;
     mapping(address => uint256) private _timeouts;
 
     event ReceivedEth(address, uint256);
+    event DrippedErc20(address, uint256);
 
     constructor(
         ERC20 _erc20Token,
         uint256 _dripAmount,
-        uint256 _decimals,
-        uint256 _timeout,
-        bool _singleUse
+        uint256 _decimals
     ) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(ADMIN_ROLE, msg.sender);
@@ -41,10 +39,9 @@ contract Fweb3TokenFaucet is Ownable, AccessControl {
         erc20Token = _erc20Token;
         dripAmount = _dripAmount * 10**_decimals;
         decimals = _decimals;
-        timeout = _timeout;
-        singleUse = _singleUse;
-        _cooldownEnabled = false;
-        _cooldown = 1;
+        timeout = 0;
+        singleUse = true;
+        holderLimit = 300 * 10**18;
     }
 
     receive() external payable {
@@ -54,16 +51,17 @@ contract Fweb3TokenFaucet is Ownable, AccessControl {
     function dripFweb3(address to) external {
         require(!faucetDisabled, 'disabled');
         require(erc20Token.balanceOf(address(this)) >= dripAmount, 'dry');
+        require(erc20Token.balanceOf(to) < holderLimit, 'limit');
+
         if (singleUse) {
-            require(!_hasUsedFaucet[to], 'already used');
+            require(!_hasUsedFaucet[to], 'used');
         }
-        if (_cooldownEnabled) {
-            require(
-                (_lastDrip + block.timestamp + _cooldown) <= block.timestamp,
-                'cooldown'
-            );
+
+        if (timeout != 0) {
+            require(_timeouts[to] <= block.timestamp, 'timeout');
         }
-        require(_timeouts[to] <= block.timestamp, 'too soon');
+        
+        require(erc20Token.balanceOf(address(this)) >= dripAmount, 'dry');
 
         bool success = erc20Token.transfer(to, dripAmount);
 
@@ -71,6 +69,8 @@ contract Fweb3TokenFaucet is Ownable, AccessControl {
 
         _timeouts[to] = block.timestamp + timeout;
         _hasUsedFaucet[to] = true;
+
+        emit DrippedErc20(msg.sender, dripAmount);
     }
 
     function setDisableFaucet(bool val) external onlyRole(ADMIN_ROLE) {
@@ -96,11 +96,21 @@ contract Fweb3TokenFaucet is Ownable, AccessControl {
         dripAmount = amount * 10**_decimals;
     }
 
-    function setCooldown(uint256 mins) external onlyRole(ADMIN_ROLE) {
-        _cooldown = mins;
+    function setHolderLimit(uint256 limit) external onlyRole(ADMIN_ROLE) {
+        holderLimit = limit * 10**18;
     }
 
-    function setCooldownEnabled(bool val) external onlyRole(ADMIN_ROLE) {
-        _cooldownEnabled = val;
+    function clearTimeout(address forWhom) external onlyRole(ADMIN_ROLE) {
+        _timeouts[forWhom] = 0;
+    }
+
+    function drainEth(address payable to) external onlyOwner {
+        to.transfer(address(this).balance);
+    }
+
+    function drainErc20(address payable to) external onlyOwner {
+        uint256 balance = erc20Token.balanceOf(address(this));
+        bool success = erc20Token.transfer(to, balance);
+        require(success, 'transfer failed');
     }
 }

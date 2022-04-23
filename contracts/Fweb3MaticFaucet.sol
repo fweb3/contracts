@@ -1,54 +1,52 @@
 // SPDX-License-Identifier: UNLICENSED
 /**
-* @title Fweb3MaticFaucet
-* @dev ContractDescription
-* @custom:dev-run-script contracts/Fweb3MaticFaucet.sol
-*/
+ * @title Fweb3MaticFaucet
+ * @dev ContractDescription
+ * @custom:dev-run-script contracts/Fweb3MaticFaucet.sol
+ */
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import '@openzeppelin/contracts/access/AccessControl.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
+import 'hardhat/console.sol';
 
 contract Fweb3MaticFaucet is Ownable, AccessControl {
+    bytes32 public constant ADMIN_ROLE = keccak256('ADMIN_ROLE');
 
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-
-    IERC20 private _erc20RequiredToken;
-    uint private _erc20RequiredAmountToUseFaucet;
-    uint public dripAmount;
-    uint public decimals;
-    uint private _timeout;
+    IERC20 public erc20Required;
+    uint256 public minErc20Required;
+    uint256 public minErc20RequiredDecimals;
+    uint256 public dripAmount;
+    uint256 public decimals;
+    uint256 public timeout;
     bool public faucetDisabled;
     bool public singleUse;
-    uint private _cooldown;
-    uint private _lastDrip;
-    bool private _cooldownEnabled;
+    uint256 public allowableExistingBalance;
 
     mapping(address => bool) private _hasUsedFaucet;
-    mapping(address => uint) private _timeouts;
+    mapping(address => uint256) private _timeouts;
 
-    event ReceivedEth(address, uint);
+    event ReceivedEth(address, uint256);
+    event DrippedEth(address, uint256);
 
     constructor(
-        uint _dripAmount,
-        uint _decimals,
-        uint timeout,
-        bool _singleUse,
-        IERC20 erc20RequiredToken,
-        uint requiredFweb3ForFaucet
+        uint256 _dripAmount,
+        uint256 _decimals,
+        uint256 _minErc20RequiredDecimals,
+        IERC20 _erc20Required
     ) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(ADMIN_ROLE, msg.sender);
 
-        dripAmount = _dripAmount * 10 ** _decimals;
+        dripAmount = _dripAmount * 10**_decimals;
         decimals = _decimals;
-        _timeout = timeout;
-        singleUse = _singleUse;
-        _erc20RequiredToken = erc20RequiredToken;
-        _erc20RequiredAmountToUseFaucet = requiredFweb3ForFaucet;
-        _cooldownEnabled = false;
-        _cooldown = 1;
+        timeout = 3600;
+        singleUse = true;
+        erc20Required = _erc20Required;
+        minErc20RequiredDecimals = _minErc20RequiredDecimals;
+        minErc20Required = 300 * 10**_minErc20RequiredDecimals;
+        allowableExistingBalance = 1;
     }
 
     receive() external payable {
@@ -57,51 +55,72 @@ contract Fweb3MaticFaucet is Ownable, AccessControl {
 
     function dripMatic(address payable to) external {
         require(!faucetDisabled, 'disabled');
-        require(address(this).balance >= dripAmount, 'dry');
+
+        if (allowableExistingBalance != 0) {
+            require(to.balance <= allowableExistingBalance, 'no need');
+        }
+
         require(
-            _erc20RequiredToken.balanceOf(to) >= _erc20RequiredAmountToUseFaucet,
-            'missing fweb3'
+            erc20Required.balanceOf(to) >= minErc20Required,
+            'missing erc20'
         );
 
         if (singleUse) {
-            require(!_hasUsedFaucet[to], 'already used');
+            require(!_hasUsedFaucet[to], 'used');
         }
 
-        if (_cooldownEnabled) {
-            require((_lastDrip + block.timestamp + _cooldown) <= block.timestamp, 'cooldown');
+        if (timeout != 0) {
+            require(_timeouts[to] <= block.timestamp, 'timeout');
         }
 
-        require(_timeouts[to] <= block.timestamp, 'too soon');
+        require(address(this).balance >= dripAmount, 'dry');
 
         (bool success, ) = to.call{value: dripAmount}('');
 
         require(success, 'send failed');
-        _timeouts[to] = block.timestamp + _timeout;
+
+        _timeouts[to] = block.timestamp + timeout;
         _hasUsedFaucet[to] = true;
-        _lastDrip = block.timestamp;
+        emit DrippedEth(msg.sender, dripAmount);
     }
 
     function setDisabled(bool val) external onlyRole(ADMIN_ROLE) {
         faucetDisabled = val;
     }
 
-    function setSingleUse(bool shouldBeSingleUse) external onlyRole(ADMIN_ROLE) {
+    function setSingleUse(bool shouldBeSingleUse)
+        external
+        onlyRole(ADMIN_ROLE)
+    {
         singleUse = shouldBeSingleUse;
     }
 
-    function setTimeout(uint timeout) external onlyRole(ADMIN_ROLE) {
-        _timeout = timeout;
+    function setTimeout(uint256 _timeout) external onlyRole(ADMIN_ROLE) {
+        timeout = _timeout;
     }
 
-    function setDripAmount(uint amount, uint _decimals) external onlyRole(ADMIN_ROLE) {
-        dripAmount = amount * 10 ** _decimals;
+    function setDripAmount(uint256 amount, uint256 _decimals)
+        external
+        onlyRole(ADMIN_ROLE)
+    {
+        dripAmount = amount * 10**_decimals;
     }
 
-    function setCooldown(uint mins) external onlyRole(ADMIN_ROLE) {
-        _cooldown = mins;
+    function setMinErc20Required(uint256 min, uint256 erc20RequiredDecimals)
+        external
+        onlyRole(ADMIN_ROLE)
+    {
+        minErc20Required = min * 10**erc20RequiredDecimals;
     }
 
-    function setCooldownEnabled(bool val) external onlyRole(ADMIN_ROLE) {
-        _cooldownEnabled = val;
+    function setAllowablExistingBalance(uint256 amt)
+        external
+        onlyRole(ADMIN_ROLE)
+    {
+        allowableExistingBalance = amt;
     }
- }
+
+    function drainEth(address payable to) external onlyOwner {
+        to.transfer(address(this).balance);
+    }
+}
