@@ -2,10 +2,7 @@ import hre from 'hardhat'
 import { writeAddressToFile } from './utils'
 
 const DRIP_AMOUNT = 1
-const DECIMAL = 17
-const ERC20_MINIMUM = 300
-const TIMEOUT = 1440 // min
-const SINGLE_USE = true
+const DECIMAL = 8
 
 const deployMaticFaucet = async (fweb3TokenAddress: string): Promise<string> => {
   try {
@@ -13,10 +10,7 @@ const deployMaticFaucet = async (fweb3TokenAddress: string): Promise<string> => 
     const faucet = await FaucetContract.deploy(
       DRIP_AMOUNT,
       DECIMAL,
-      TIMEOUT,
-      SINGLE_USE,
-      fweb3TokenAddress,
-      ERC20_MINIMUM
+      fweb3TokenAddress
     )
 
     await faucet.deployed()

@@ -4,8 +4,6 @@ import { writeAddressToFile } from './utils'
 
 const DECIMALS = 18
 const DRIP_AMOUNT = 300
-const TIMEOUT = 1440 // min
-const SINGLE_USE = true
 
 const deployFweb3Faucet = async (
   fweb3TokenAddress: string
@@ -17,8 +15,6 @@ const deployFweb3Faucet = async (
       fweb3TokenAddress,
       DRIP_AMOUNT,
       DECIMALS,
-      TIMEOUT,
-      SINGLE_USE
     )
 
     await fweb3TokenFaucetContract.deployed()

@@ -12,7 +12,6 @@ let faucet: Fweb3MaticFaucet,
 const DRIP_AMOUNT = 1
 const DECIMAL = 8
 const MIN_ERC20 = 300
-const MIN_ERC20_DECIMALS = 18
 
 describe('Matic faucet', () => {
   beforeEach(async () => {
@@ -28,7 +27,6 @@ describe('Matic faucet', () => {
     faucet = await MaticFaucetFactory.deploy(
       DRIP_AMOUNT,
       DECIMAL,
-      MIN_ERC20_DECIMALS,
       token.address
     )
     await faucet.deployed()

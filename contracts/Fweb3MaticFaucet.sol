@@ -33,7 +33,6 @@ contract Fweb3MaticFaucet is Ownable, AccessControl {
     constructor(
         uint256 _dripAmount,
         uint256 _decimals,
-        uint256 _minErc20RequiredDecimals,
         IERC20 _erc20Required
     ) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -44,8 +43,8 @@ contract Fweb3MaticFaucet is Ownable, AccessControl {
         timeout = 3600;
         singleUse = true;
         erc20Required = _erc20Required;
-        minErc20RequiredDecimals = _minErc20RequiredDecimals;
-        minErc20Required = 300 * 10**_minErc20RequiredDecimals;
+        minErc20RequiredDecimals = 18;
+        minErc20Required = 300 * 10**minErc20RequiredDecimals;
         allowableExistingBalance = 1;
     }
 
