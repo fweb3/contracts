@@ -9,7 +9,7 @@ import { deployMaticFaucet } from './fweb3_matic_faucet_deploy'
 
 // import hre from 'hardhat'
 // const _sendToEthernal = async (addresses: any) => {
-//   if (process.env.SAVE_PATH === 'local') {
+//   if (process.env.NETWORK === 'local') {
 //     const {
 //       tokenAddress,
 //       gameAddress,
