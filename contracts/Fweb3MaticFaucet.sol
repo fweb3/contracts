@@ -9,7 +9,6 @@ pragma solidity ^0.8.9;
 import '@openzeppelin/contracts/access/AccessControl.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
-import 'hardhat/console.sol';
 
 contract Fweb3MaticFaucet is Ownable, AccessControl {
     bytes32 public constant ADMIN_ROLE = keccak256('ADMIN_ROLE');

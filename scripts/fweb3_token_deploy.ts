@@ -18,4 +18,8 @@ const deployFweb3Token = async (): Promise<string> => {
   }
 }
 
+// deployFweb3Token()
+//   .then((add) => console.log(add))
+//   .catch(console.error)
+
 export { deployFweb3Token }

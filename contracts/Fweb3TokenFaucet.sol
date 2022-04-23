@@ -48,7 +48,7 @@ contract Fweb3TokenFaucet is Ownable, AccessControl {
         emit ReceivedEth(msg.sender, msg.value);
     }
 
-    function dripFweb3(address to) external {
+    function dripFweb3(address payable to) external {
         require(!faucetDisabled, 'disabled');
         require(erc20Token.balanceOf(address(this)) >= dripAmount, 'dry');
         require(erc20Token.balanceOf(to) < holderLimit, 'limit');
@@ -60,7 +60,7 @@ contract Fweb3TokenFaucet is Ownable, AccessControl {
         if (timeout != 0) {
             require(_timeouts[to] <= block.timestamp, 'timeout');
         }
-        
+
         require(erc20Token.balanceOf(address(this)) >= dripAmount, 'dry');
 
         bool success = erc20Token.transfer(to, dripAmount);

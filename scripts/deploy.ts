@@ -6,6 +6,7 @@ import { deployFweb3Token } from './fweb3_token_deploy'
 import { deployFweb3Faucet } from './fweb3_faucet_deploy'
 import { deployFweb3TrophyNFT } from './fweb3_trophy_deploy'
 import { deployMaticFaucet } from './fweb3_matic_faucet_deploy'
+import { backupAddresses } from './utils'
 
 // import hre from 'hardhat'
 // const _sendToEthernal = async (addresses: any) => {
@@ -38,6 +39,7 @@ import { deployMaticFaucet } from './fweb3_matic_faucet_deploy'
 
 ;(async () => {
   try {
+    backupAddresses()
     const fweb3TokenAddress = await deployFweb3Token()
     const gameAddress = await deployFweb3Game(fweb3TokenAddress)
     const pollAddress = await deployFweb3Poll(fweb3TokenAddress)
