@@ -10,3 +10,4 @@ tmp
 .DS_Store
 typechain-types
 .deps
+backup
