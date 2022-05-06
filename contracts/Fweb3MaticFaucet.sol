@@ -51,7 +51,7 @@ contract Fweb3MaticFaucet is Ownable, AccessControl {
         emit ReceivedEth(msg.sender, msg.value);
     }
 
-    function dripMatic(address payable to) external {
+    function dripMatic(address payable to) external onlyRole(ADMIN_ROLE) {
         require(!faucetDisabled, 'disabled');
 
         if (allowableExistingBalance != 0) {

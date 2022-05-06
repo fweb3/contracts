@@ -48,7 +48,7 @@ contract Fweb3TokenFaucet is Ownable, AccessControl {
         emit ReceivedEth(msg.sender, msg.value);
     }
 
-    function dripFweb3(address payable to) external {
+    function dripFweb3(address payable to) external onlyRole(ADMIN_ROLE) {
         require(!faucetDisabled, 'disabled');
         require(erc20Token.balanceOf(address(this)) >= dripAmount, 'dry');
         require(erc20Token.balanceOf(to) < holderLimit, 'limit');
