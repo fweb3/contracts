@@ -9,8 +9,8 @@ import { readAddressFromFile } from './utils'
   // const maticFaucetAddress = await deployMaticFaucet(PROD_FWEB3_TOKEN)
   // const fweb3FaucetAddress = await deployFweb3Faucet(PROD_FWEB3_TOKEN)
 
-  // const fweb3TokenAddress = await deployFweb3Token()
-  const fweb3TokenAddress = await readAddressFromFile('fweb3_token')
+  const fweb3TokenAddress = await deployFweb3Token()
+  // const fweb3TokenAddress = await readAddressFromFile('fweb3_token')
   const maticFaucetAddress = await deployMaticFaucet(fweb3TokenAddress)
   const fweb3FaucetAddress = await deployFweb3Faucet(fweb3TokenAddress)
   const faucets = {
