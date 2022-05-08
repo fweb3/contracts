@@ -14,7 +14,7 @@ const readAddressFromFile = (fileName: string): string => {
 
 const backupAddresses = () => {
   const backupPath = `deploy_addresses/backup/${Date.now()}`
-  fs.copyFileSync(`deploy_addresses/${process.env.NETWORK}`, backupPath)
+  fs.copySync(`deploy_addresses/${process.env.NETWORK}`, backupPath)
 }
 
 export { writeAddressToFile, readAddressFromFile, backupAddresses }

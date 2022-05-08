@@ -1,7 +1,7 @@
 import { deployFweb3Faucet } from "./fweb3_faucet_deploy";
 import { deployMaticFaucet } from './fweb3_matic_faucet_deploy'
 import { deployFweb3Token } from "./fweb3_token_deploy";
-import { readAddressFromFile } from './utils'
+// import { readAddressFromFile } from './utils'
 
 // const PROD_FWEB3_TOKEN = '0x4a14ac36667b574b08443a15093e417db909d7a3'
 
