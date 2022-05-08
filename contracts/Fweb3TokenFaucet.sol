@@ -20,7 +20,7 @@ contract Fweb3TokenFaucet is FaucetBase {
         uint256 _decimals,
         uint256 _timeout,
         bool _singleUse,
-        uint _holderLimitFweb3
+        uint256 _holderLimitFweb3
     ) FaucetBase() {
         fweb3Token = _fweb3Token;
         dripAmount = _dripAmount * 10**_decimals;

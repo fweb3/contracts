@@ -11,7 +11,7 @@ let faucet: Fweb3TokenFaucet,
 
 const STARTING_FAUCET_BALANCE = '1000000'
 
-describe.only('fweb3 token faucet', () => {
+describe('fweb3 token faucet', () => {
   beforeEach(async () => {
     ;[owner, user1, user2] = await ethers.getSigners()
 
