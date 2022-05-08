@@ -3,7 +3,7 @@ import hre from 'hardhat'
 
 const ROOT_ARTIFACT_PATH = 'artifacts/contracts'
 const ROOT_ADDRESS_PATH = 'deploy_addresses'
-const ROOT_ABI_PATH = 'deploy_abis'
+const ROOT_ABI_PATH = 'deploy_interfaces'
 
 const writeAddressToFile = (fileName: string, address: string): void => {
   const path = `${ROOT_ADDRESS_PATH}/${hre.network.name}/${fileName}`
