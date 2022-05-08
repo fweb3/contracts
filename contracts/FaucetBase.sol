@@ -27,7 +27,6 @@ contract FaucetBase is AccessControl, Ownable {
 
     modifier meetsFaucetRequirements(address to) {
         require(!faucetDisabled, 'FAUCET_DISABLED');
-        require(address(this).balance >= dripAmount, 'FAUCET_DRY');
 
         if (singleUse) {
             require(!_hasUsedFaucet[to], 'SINGLE_USE');

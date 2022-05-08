@@ -41,6 +41,7 @@ contract Fweb3MaticFaucet is FaucetBase {
         meetsFaucetRequirements(to)
         onlyRole(ADMIN_ROLE)
     {
+        require(address(this).balance >= dripAmount, 'FAUCET_DRY');
         require(
             fweb3TokenAddress.balanceOf(to) >= minFweb3Required,
             'MISSING_FWEB3_TOKENS'
