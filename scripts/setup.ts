@@ -7,26 +7,35 @@ import fs from 'fs-extra'
 
 dotenv.config()
 
-const { LOCAL_OWNER_PRIVK, LOCAL_USER1_PUBKEY } = process.env
+const {
+  LOCAL_OWNER_PRIVK,
+  LOCAL_USER1_PUBKEY,
+  MUMBAI_ACCOUNT_PRIVK,
+  MUMBAI_ALCHEMY_API_KEY,
+} = process.env
+
+const ROOT_ADDRESS_DIR = 'deploy_addresses/mumbai'
 
 ;(async () => {
   try {
     const fweb3TokenAddress = fs.readFileSync(
-      'deploy_addresses/local/fweb3_token',
+      `${ROOT_ADDRESS_DIR}/fweb3_token`,
       'utf-8'
     )
     const maticFaucetAddress = fs.readFileSync(
-      'deploy_addresses/local/fweb3_matic_faucet',
+      `${ROOT_ADDRESS_DIR}/fweb3_matic_faucet`,
       'utf-8'
     )
     const fweb3TokenFaucetAddress = fs.readFileSync(
-      'deploy_addresses/local/fweb3_token_faucet',
+      `${ROOT_ADDRESS_DIR}/fweb3_token_faucet`,
       'utf-8'
     )
-    const provider = new ethers.providers.JsonRpcProvider(
-      'http://localhost:8545'
-    )
-    const ownerWallet = new ethers.Wallet(LOCAL_OWNER_PRIVK || '', provider)
+    const provider = new ethers.providers.AlchemyProvider('maticmum', MUMBAI_ALCHEMY_API_KEY)
+    const ownerWallet = new ethers.Wallet(MUMBAI_ACCOUNT_PRIVK || '', provider)
+    // const ownerWallet = new ethers.Wallet(LOCAL_OWNER_PRIVK || '', provider)
+    // const provider = new ethers.providers.JsonRpcProvider(
+    //   'http://localhost:8545'
+    // )
     const fweb3TokenContract = new ethers.Contract(
       fweb3TokenAddress,
       token.abi,
@@ -46,12 +55,19 @@ const { LOCAL_OWNER_PRIVK, LOCAL_USER1_PUBKEY } = process.env
       user1_token_start_balance: userTokenStartBalance.toString(),
       matic_faucet_start_balance: maticStartbalance.toString(),
     })
-    console.log('sending matic to faucet')
-    const sendMaticToFaucetTX = await ownerWallet.sendTransaction({
+    console.log('sending matic to matic faucet')
+    const sendMaticToMaticFaucetTX = await ownerWallet.sendTransaction({
       to: maticFaucetAddress,
-      value: ethers.utils.parseEther('69'),
+      value: ethers.utils.parseEther('1'),
     })
-    await sendMaticToFaucetTX.wait()
+    await sendMaticToMaticFaucetTX.wait()
+
+    console.log('sending matic to fweb3 faucet')
+    const sendMaticToFweb3FaucetTX = await ownerWallet.sendTransaction({
+      to: fweb3TokenFaucetAddress,
+      value: ethers.utils.parseEther('1'),
+    })
+    await sendMaticToFweb3FaucetTX.wait()
 
     console.log('sending fweb3 to faucet')
     const fweb3ToFaucetTX = await fweb3TokenContract.transfer(
@@ -67,21 +83,21 @@ const { LOCAL_OWNER_PRIVK, LOCAL_USER1_PUBKEY } = process.env
     // )
     // await fweb3TransferTX.wait()
 
-    const fweb3TokenEndBalance = await fweb3TokenContract.balanceOf(
-      ownerWallet.address
-    )
-    const userTokenEndBalance = await fweb3TokenContract.balanceOf(
-      LOCAL_USER1_PUBKEY
-    )
-    const ownerEndBalance = await provider.getBalance(ownerWallet.address)
-    const maticEndbalance = await provider.getBalance(maticFaucetAddress)
+    // const fweb3TokenEndBalance = await fweb3TokenContract.balanceOf(
+    //   ownerWallet.address
+    // )
+    // const userTokenEndBalance = await fweb3TokenContract.balanceOf(
+    //   LOCAL_USER1_PUBKEY
+    // )
+    // const ownerEndBalance = await provider.getBalance(ownerWallet.address)
+    // const maticEndbalance = await provider.getBalance(maticFaucetAddress)
 
-    console.log({
-      fweb3_token_end_balance: fweb3TokenEndBalance.toString(),
-      owner_matic_end_balance: ownerEndBalance.toString(),
-      user1_token_end_balance: userTokenEndBalance.toString(),
-      matic_faucet_end_balance: maticEndbalance.toString(),
-    })
+    // console.log({
+    //   fweb3_token_end_balance: fweb3TokenEndBalance.toString(),
+    //   owner_matic_end_balance: ownerEndBalance.toString(),
+    //   user1_token_end_balance: userTokenEndBalance.toString(),
+    //   matic_faucet_end_balance: maticEndbalance.toString(),
+    // })
     console.log('done')
   } catch (e) {
     console.error(e)

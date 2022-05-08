@@ -10,229 +10,117 @@ let faucet: Fweb3MaticFaucet,
   owner: SignerWithAddress
 
 const DRIP_AMOUNT = 1
-const DECIMAL = 8
-const MIN_ERC20 = 300
+const DECIMAL = 16
+const TIMEOUT = 0
+const SINGLE_USE = false
+const MIN_FWEB3_REQUIRED = 300
+const MIN_FWEB3_DECIMALS = 18
+const HOLDER_MATIC_LIMIT = 0
+
+const ADMIN_ROLE_HASH =
+  '0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775'
+
+const pauseFor = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 describe('Matic faucet', () => {
   beforeEach(async () => {
     ;[owner, user1, user2] = await ethers.getSigners()
 
-    const TokenFactory = await ethers.getContractFactory('Fweb3Token')
-    token = await TokenFactory.deploy()
+    const Fweb3Token = await ethers.getContractFactory('Fweb3Token')
+    token = await Fweb3Token.deploy()
     await token.deployed()
 
     const MaticFaucetFactory = await ethers.getContractFactory(
       'Fweb3MaticFaucet'
     )
+
     faucet = await MaticFaucetFactory.deploy(
       DRIP_AMOUNT,
       DECIMAL,
-      token.address
+      token.address,
+      TIMEOUT,
+      SINGLE_USE,
+      MIN_FWEB3_REQUIRED,
+      MIN_FWEB3_DECIMALS,
+      HOLDER_MATIC_LIMIT
     )
     await faucet.deployed()
     await owner.sendTransaction({
       to: faucet.address,
       value: ethers.utils.parseEther('100'),
     })
+    await token.transfer(user1.address, ethers.utils.parseEther('300'))
   })
   it('should drip matic', async () => {
-    const wallet = ethers.Wallet.createRandom()
-    await token.transfer(
-      wallet.address,
-      ethers.utils.parseEther(MIN_ERC20.toString())
-    )
-    await faucet.setAllowablExistingBalance(0)
-    await faucet.setTimeout(6)
-    await faucet.dripMatic(wallet.address)
-    const bal = await faucet.provider.getBalance(wallet.address)
-    expect(bal.toString()).to.equal('100000000')
+    const tx = await faucet.drip(user1.address)
+    const receipt = await tx.wait()
+    expect(receipt.transactionHash).ok
   })
-  describe('faucet requirements', async () => {
-    it('should not drip when disabled', async () => {
-      let error: any
-      try {
-        await faucet.setDisabled(true)
-        await faucet.dripMatic(user1.address)
-      } catch (e) {
-        error = e
-      }
-      expect(error?.message.includes('disabled')).ok
-    })
-    it('should not drip if address has x amount of matic already', async () => {
-      let error: any
-      try {
-        await faucet.dripMatic(user1.address)
-      } catch (e) {
-        error = e
-      }
-      expect(error?.message.includes('no need')).ok
-    })
-
-    it('needs required erc20 to allow drip', async () => {
-      let error: any
-      try {
-        const wallet = ethers.Wallet.createRandom()
-        await faucet.dripMatic(wallet.address)
-      } catch (e) {
-        error = e
-      }
-      expect(error?.message.includes('missing erc20')).ok
-    })
-
-    it('shouldnt drip twice if single use enabled', async () => {
-      let error: any
-      try {
-        const wallet = ethers.Wallet.createRandom()
-        await token.transfer(
-          wallet.address,
-          ethers.utils.parseEther(MIN_ERC20.toString())
-        )
-        await faucet.setAllowablExistingBalance(0)
-        await faucet.setSingleUse(true)
-        await faucet.dripMatic(wallet.address)
-        await faucet.dripMatic(wallet.address)
-      } catch (e) {
-        error = e
-      }
-      expect(error?.message.includes('used')).ok
-    })
-
-    it('shouldnt drip for a timeout', async () => {
-      let error: any
-      try {
-        const wallet = ethers.Wallet.createRandom()
-        await token.transfer(
-          wallet.address,
-          ethers.utils.parseEther(MIN_ERC20.toString())
-        )
-        await faucet.setAllowablExistingBalance(0)
-        await faucet.setTimeout(6)
-        await faucet.setSingleUse(false)
-        await faucet.dripMatic(wallet.address)
-        await faucet.dripMatic(wallet.address)
-      } catch (e) {
-        error = e
-      }
-      expect(error?.message.includes('timeout')).ok
-    })
+  it('should not drip without min required fweb3 tokens', async () => {
+    let error
+    try {
+      await faucet.drip(user2.address)
+    } catch (err: any) {
+      error = err
+    }
+    expect(error?.message.includes('MISSING_FWEB3_TOKENS'))
   })
-  describe('admin functions', async () => {
-    it('transferrs eth out', async () => {
-      const start = await faucet.provider.getBalance(faucet.address)
-      await faucet.drainEth(user1.address)
-      const end = await faucet.provider.getBalance(faucet.address)
-      expect(start.sub(end)).to.equal(ethers.utils.parseEther('100'))
-    })
-    it('only lets owner transfer out eth', async () => {
-      let error: any
-      try {
-        const roleBytes = ethers.utils.toUtf8Bytes('ADMIN_ROLE')
-        const roleHash = ethers.utils.keccak256(roleBytes)
-        await faucet.grantRole(roleHash, user1.address)
-        const adminFaucet = await faucet.connect(user1)
-        await adminFaucet.drainEth(user1.address)
-      } catch (e) {
-        error = e
-      }
-      expect(error?.message.includes('not the owner')).ok
-    })
-    it('lets admins do admin things', async () => {
-      const roleBytes = ethers.utils.toUtf8Bytes('ADMIN_ROLE')
-      const roleHash = ethers.utils.keccak256(roleBytes)
-      await faucet.grantRole(roleHash, user1.address)
-      const adminContract = await faucet.connect(user1)
-      await adminContract.setDisabled(true)
-      await adminContract.setSingleUse(true)
-      await adminContract.setTimeout(666)
-      await adminContract.setDripAmount(666, 10)
-      await adminContract.setMinErc20Required(666, 10)
-      await adminContract.setAllowablExistingBalance(666)
-    })
+
+  it('should not drip when disabled', async () => {
+    let error
+    try {
+      await faucet.setDisableFaucet(true)
+      await faucet.drip(user1.address)
+    } catch (err: any) {
+      error = err
+    }
+    expect(error?.message.includes('FAUCET_DISABLED'))
   })
-  // it('should let owner set admin role', async () => {
-  //   const roleBytes = ethers.utils.toUtf8Bytes('ADMIN_ROLE')
-  //   const roleHash = ethers.utils.keccak256(roleBytes)
-  //   await maticFaucet.grantRole(roleHash, user1.address)
-  //   const hasRole = maticFaucet.hasRole(roleHash, user1.address)
-  //   expect(hasRole).ok
-  // })
-  // it('should only let admin set drip amount', async () => {
-  //   let error: any
-  //   const before = (await maticFaucet.dripAmount()).toString()
-  //   await maticFaucet.setDripAmount(6, 10)
-  //   const after = (await maticFaucet.dripAmount()).toString()
-  //   expect(before).to.equal((DRIP_AMOUNT * 10 ** DECIMAL).toString())
-  //   expect(after).to.equal('60000000000')
-  //   try {
-  //     const user1Faucet: Fweb3MaticFaucet = await maticFaucet.connect(user1)
-  //     await user1Faucet.setDripAmount(666, 10)
-  //   } catch (e) {
-  //     error = e
-  //   }
-  //   expect(error?.message.includes('missing role')).be.true
-  // })
-  // it('should error if drip exceeds balance', async () => {
-  //   let error: any
-  //   await owner.sendTransaction({
-  //     to: maticFaucet.address,
-  //     value: ethers.utils.parseEther('1'),
-  //   })
-  //   try {
-  //     await maticFaucet.setDripAmount(666, 18)
-  //     await maticFaucet.dripMatic(owner.address)
-  //   } catch (e) {
-  //     error = e
-  //   }
-  //   expect(error?.message.includes('dry')).ok
-  // })
 
-  // it('only drips once when single use enabled', async () => {
-  //   let error: any
-  //   try {
-  //     await owner.sendTransaction({
-  //       to: maticFaucet.address,
-  //       value: ethers.utils.parseEther('666'),
-  //     })
-  //     await fweb3Token.transfer(user1.address, ethers.utils.parseEther('200'))
-  //     await maticFaucet.setSingleUse(true)
-  //     await maticFaucet.dripMatic(user1.address)
-  //     await maticFaucet.dripMatic(user1.address)
-  //   } catch (e) {
-  //     error = e
-  //   }
-  //   expect(error?.message.includes('already used')).ok
-  // })
-  // it('should set and not drip for timeout', async () => {
-  //   let error: any
-  //   try {
-  //     await owner.sendTransaction({
-  //       to: maticFaucet.address,
-  //       value: ethers.utils.parseEther('666'),
-  //     })
-  //     await fweb3Token.transfer(user1.address, ethers.utils.parseEther('200'))
-  //     await maticFaucet.setTimeout(10)
-  //     await maticFaucet.dripMatic(user1.address)
-  //     await maticFaucet.dripMatic(user1.address)
-  //   } catch (e) {
-  //     error = e
-  //   }
-  //   expect(error?.message.includes('too soon')).ok
-  // })
+  it('should only let admins call the drip', async () => {
+    await faucet.grantRole(ADMIN_ROLE_HASH, user1.address)
+    const user1Faucet = await faucet.connect(user1)
+    const tx = await user1Faucet.drip(user1.address)
+    const receipt = await tx.wait()
+    expect(receipt.transactionHash).ok
+    let error
+    try {
+      const user2Faucet = faucet.connect(user2)
+      await user2Faucet.drip(user2.address)
+    } catch (err: any) {
+      error = err
+    }
+    expect(error?.message.includes(`is missing role ${ADMIN_ROLE_HASH}`))
+  })
 
-  // it('should not drip for a cooldown peroid', async () => {
-  //   let error: any
-  //   try {
-  //     await owner.sendTransaction({
-  //       to: maticFaucet.address,
-  //       value: ethers.utils.parseEther('666'),
-  //     })
-  //     await fweb3Token.transfer(user1.address, ethers.utils.parseEther('200'))
-  //     await maticFaucet.setCooldownEnabled(true)
-  //     await maticFaucet.dripMatic(user1.address)
-  //     await maticFaucet.dripMatic(user1.address)
-  //   } catch (e) {
-  //     error = e
-  //   }
-  //   expect(error?.message.includes('cooldown')).ok
-  // })
+  it('should only drip once with single use enabled', async () => {
+    let error
+    try {
+      await faucet.drip(user1.address)
+      await faucet.drip(user1.address)
+    } catch (err: any) {
+      error = err
+    }
+    expect(error?.message.includes('SINGLE_USE'))
+  })
+
+  it('should not drip for a timeout', async () => {
+    let error
+    await faucet.setTimeout(0)
+    await faucet.drip(user1.address)
+    const tx = await faucet.drip(user1.address)
+    const { transactionHash } = await tx.wait()
+    expect(transactionHash).ok
+    try {
+      await faucet.setTimeout(2)
+      await faucet.drip(user1.address)
+      await pauseFor(1000)
+      await faucet.drip(user1.address)
+    } catch (err: any) {
+      error = err
+    }
+    expect(error?.message.includes('WALLET_TIMEOUT'))
+  })
 })
