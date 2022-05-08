@@ -1,6 +1,9 @@
 import { Fweb3TokenFaucet } from './../typechain-types';
 import hre from 'hardhat'
-import { writeAddressToFile } from './utils'
+import { writeAddressToFile, copyContractInterface } from './utils'
+
+
+const FAUCET_CONTRACT_NAME = 'Fweb3TokenFaucet'
 
 const DECIMALS = 18
 const DRIP_AMOUNT = 300
@@ -12,7 +15,9 @@ const deployFweb3Faucet = async (
   fweb3TokenAddress: string
 ): Promise<string> => {
   try {
-    const FaucetContractFactory = await hre.ethers.getContractFactory('Fweb3TokenFaucet')
+    const FaucetContractFactory = await hre.ethers.getContractFactory(
+      FAUCET_CONTRACT_NAME
+    )
 
     const fweb3TokenFaucetContract: Fweb3TokenFaucet = await FaucetContractFactory.deploy(
       fweb3TokenAddress,
@@ -26,6 +31,7 @@ const deployFweb3Faucet = async (
     await fweb3TokenFaucetContract.deployed()
     const faucetAddress: string = fweb3TokenFaucetContract.address
     writeAddressToFile('fweb3_token_faucet', faucetAddress)
+    copyContractInterface(FAUCET_CONTRACT_NAME)
     return faucetAddress
   } catch (e) {
     console.error(e)

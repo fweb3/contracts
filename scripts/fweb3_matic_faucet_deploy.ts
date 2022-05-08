@@ -1,5 +1,7 @@
 import hre from 'hardhat'
-import { writeAddressToFile } from './utils'
+import { writeAddressToFile, copyContractInterface } from './utils'
+
+const FAUCET_CONTRACT_NAME = 'Fweb3MaticFaucet'
 
 const DRIP_AMOUNT = 420
 const DECIMALS = 15
@@ -8,13 +10,13 @@ const SINGLE_USE = false
 const MIN_REQUIRED_FWEB3 = 0
 const MIN_REQUIRED_FWEB3_DECIMALS = 18
 const HOLDER_LIMIT = 0
-        
+
 const deployMaticFaucet = async (
   fweb3TokenAddress: string
 ): Promise<string> => {
   try {
     const FaucetContract = await hre.ethers.getContractFactory(
-      'Fweb3MaticFaucet'
+      FAUCET_CONTRACT_NAME
     )
     const faucet = await FaucetContract.deploy(
       DRIP_AMOUNT,
@@ -30,6 +32,7 @@ const deployMaticFaucet = async (
     await faucet.deployed()
     const faucetAddress: string = faucet.address
     writeAddressToFile('fweb3_matic_faucet', faucetAddress)
+    copyContractInterface(FAUCET_CONTRACT_NAME)
     return faucetAddress
   } catch (e) {
     console.error(e)
