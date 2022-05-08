@@ -35,8 +35,8 @@ contract Fweb3TokenFaucet is FaucetBase {
         meetsFaucetRequirements(to)
         onlyRole(ADMIN_ROLE)
     {
-        require(fweb3Token.balanceOf(to) < holderLimit, 'FWEB3_WALLET_LIMIT');
         require(fweb3Token.balanceOf(address(this)) >= dripAmount, 'FWEB3_DRY');
+        require(fweb3Token.balanceOf(to) <= holderLimit, 'FWEB3_WALLET_LIMIT');
 
         bool success = fweb3Token.transfer(to, dripAmount);
 

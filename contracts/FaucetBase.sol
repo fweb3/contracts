@@ -27,12 +27,14 @@ contract FaucetBase is AccessControl, Ownable {
 
     modifier meetsFaucetRequirements(address to) {
         require(!faucetDisabled, 'FAUCET_DISABLED');
-
+        // < 10 Gwei
+        require(address(this).balance >= 1*10**10, 'FAUCET_DRY');
+        
         if (singleUse) {
             require(!_hasUsedFaucet[to], 'SINGLE_USE');
         }
 
-        require(to.balance >= holderLimit, 'HOLDER_LIMIT');
+        require(to.balance > holderLimit, 'HOLDER_LIMIT');
 
         if (timeout > 0) {
             require(_timeouts[to] <= block.timestamp, 'WALLET_TIMEOUT');
