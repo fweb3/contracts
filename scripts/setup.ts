@@ -56,7 +56,11 @@ const _getWallet = (network: string, provider: Provider) => {
       token.abi,
       ownerWallet
     )
-
+    const ownerStartToken = await fweb3TokenContract.balanceOf(ownerWallet.address)
+    const start_fweb3 = ethers.utils.formatEther(ownerStartToken.toString())
+    const ownerbal = await provider.getBalance(ownerWallet.address)
+    const start_eth = ethers.utils.formatEther(ownerbal.toString())
+    console.log({ start_fweb3, start_eth })
     console.log(`[+] sending matic to matic faucet on ${network}`)
     const sendMaticToMaticFaucetTX = await ownerWallet.sendTransaction({
       to: maticFaucetAddress,

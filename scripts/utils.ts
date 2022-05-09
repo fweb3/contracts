@@ -22,7 +22,6 @@ const backupAddresses = () => {
   fs.copySync(`${ROOT_ADDRESS_PATH}/${hre.network.name}`, backupPath)
 }
 
-
 const _getAbi = (contractName: string) => {
   const file = fs.readFileSync(
     `${ROOT_ARTIFACT_PATH}/${contractName}.sol/${contractName}.json`,
@@ -32,8 +31,15 @@ const _getAbi = (contractName: string) => {
 }
 
 const copyContractInterface = (contractName: string) => {
+  const normalName =
+    contractName.charAt(0).toLowerCase() + contractName.slice(1)
   const data = _getAbi(contractName)
-  fs.writeFileSync(`${ROOT_ABI_PATH}/${contractName}.json`, data)
+  fs.writeFileSync(`${ROOT_ABI_PATH}/${normalName}.json`, data)
 }
 
-export { writeAddressToFile, readAddressFromFile, backupAddresses, copyContractInterface }
+export {
+  writeAddressToFile,
+  readAddressFromFile,
+  backupAddresses,
+  copyContractInterface,
+}

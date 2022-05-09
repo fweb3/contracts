@@ -61,11 +61,20 @@ describe('fweb3 token faucet', () => {
   it('wont drip if account has more than limit', async () => {
     let error
     try {
+      await faucet.setHolderLimit(100, 18)
       await token.transfer(user1.address, ethers.utils.parseEther('101'))
       await faucet.drip(user1.address)
     } catch (err: any) {
       error = err
     }
     expect(error.message.includes('FWEB3_WALLET_LIMIT'))
+  })
+
+  it('will drip if holder limit is zero no matter the account balance', async () => {
+    await faucet.setHolderLimit(0, 18)
+    await token.transfer(user1.address, ethers.utils.parseEther('101'))
+    const tx = await faucet.drip(user1.address)
+    const { transactionHash } = await tx.wait()
+    expect(transactionHash).ok
   })
 })

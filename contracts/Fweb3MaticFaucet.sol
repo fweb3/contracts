@@ -52,7 +52,7 @@ contract Fweb3MaticFaucet is FaucetBase {
         );
 
         if (holderLimit != 0) {
-            require(to.balance < holderLimit, 'HOLDER_LIMIT');
+            require(to.balance <= holderLimit, 'HOLDER_LIMIT');
         }
 
         (bool success, ) = to.call{value: dripAmount}('');
