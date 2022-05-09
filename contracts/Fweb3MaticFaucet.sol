@@ -17,7 +17,7 @@ contract Fweb3MaticFaucet is FaucetBase {
     uint256 public minFweb3RequiredDecimals;
 
     constructor(
-        uint256 _dripAmount,
+        uint256 _dripBase,
         uint256 _decimals,
         IERC20 _fweb3TokenAddress,
         uint256 _timout,
@@ -26,7 +26,8 @@ contract Fweb3MaticFaucet is FaucetBase {
         uint256 _minFweb3TokenRequiredDecimals,
         uint256 _holderLimit
     ) FaucetBase() {
-        dripAmount = _dripAmount * 10**_decimals;
+        dripBase = _dripBase;
+        dripAmount = _dripBase * 10**_decimals;
         decimals = _decimals;
         timeout = _timout;
         singleUse = _singleUse;

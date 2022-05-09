@@ -16,14 +16,15 @@ contract Fweb3TokenFaucet is FaucetBase {
 
     constructor(
         ERC20 _fweb3Token,
-        uint256 _dripAmount,
+        uint256 _dripBase,
         uint256 _decimals,
         uint256 _timeout,
         bool _singleUse,
         uint256 _holderLimitFweb3
     ) FaucetBase() {
         fweb3Token = _fweb3Token;
-        dripAmount = _dripAmount * 10**_decimals;
+        dripAmount = _dripBase * 10**_decimals;
+        dripBase = _dripBase;
         decimals = _decimals;
         timeout = _timeout;
         singleUse = _singleUse;

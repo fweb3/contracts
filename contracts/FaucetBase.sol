@@ -12,6 +12,7 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 contract FaucetBase is AccessControl, Ownable {
     bytes32 public constant ADMIN_ROLE = keccak256('ADMIN_ROLE');
     uint256 public dripAmount;
+    uint256 public dripBase;
     uint256 public decimals;
     uint256 public timeout;
     bool public faucetDisabled;
@@ -81,12 +82,13 @@ contract FaucetBase is AccessControl, Ownable {
         holderLimit = limit * 10**18;
     }
 
-    function setDripAmount(uint256 amount, uint256 _decimals)
+    function setDripAmount(uint256 _dripbase, uint256 _decimals)
         external
         onlyRole(ADMIN_ROLE)
     {
         decimals = _decimals;
-        dripAmount = amount * 10**_decimals;
+        dripBase = _dripbase;
+        dripAmount = _dripbase * 10**_decimals;
     }
 
     function clearTimeoutForAddress(address forWhom)
