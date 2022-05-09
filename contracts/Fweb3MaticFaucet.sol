@@ -44,13 +44,16 @@ contract Fweb3MaticFaucet is FaucetBase {
         meetsFaucetRequirements(to)
         onlyRole(ADMIN_ROLE)
     {
-        require(to.balance > holderLimit, 'HOLDER_LIMIT');
         require(address(this).balance >= dripAmount, 'FAUCET_DRY');
 
         require(
             fweb3TokenAddress.balanceOf(to) >= minFweb3Required,
             'MISSING_FWEB3_TOKENS'
         );
+
+        if (holderLimit != 0) {
+            require(to.balance < holderLimit, 'HOLDER_LIMIT');
+        }
 
         (bool success, ) = to.call{value: dripAmount}('');
 

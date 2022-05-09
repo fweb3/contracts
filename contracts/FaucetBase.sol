@@ -18,7 +18,6 @@ contract FaucetBase is AccessControl, Ownable {
     bool public faucetDisabled;
     bool public singleUse;
     uint256 public holderLimit;
-    bool public useHolderLimit;
 
     mapping(address => bool) _hasUsedFaucet;
     mapping(address => uint256) _timeouts;
@@ -29,7 +28,7 @@ contract FaucetBase is AccessControl, Ownable {
     modifier meetsFaucetRequirements(address to) {
         require(!faucetDisabled, 'FAUCET_DISABLED');
         // < 10 Gwei
-        require(address(this).balance >= 1*10**10, 'FAUCET_DRY');
+        require(address(this).balance >= 1 * 10**10, 'FAUCET_DRY');
 
         if (singleUse) {
             require(!_hasUsedFaucet[to], 'SINGLE_USE');
@@ -55,6 +54,7 @@ contract FaucetBase is AccessControl, Ownable {
         if (timeout > 0) {
             _timeouts[to] = block.timestamp + timeout;
         }
+
         if (singleUse) {
             _hasUsedFaucet[to] = true;
         }
@@ -78,8 +78,11 @@ contract FaucetBase is AccessControl, Ownable {
         timeout = newTimeout;
     }
 
-    function setHolderLimit(uint256 limit) external onlyRole(ADMIN_ROLE) {
-        holderLimit = limit * 10**18;
+    function setHolderLimit(uint256 _base, uint256 _decimals)
+        external
+        onlyRole(ADMIN_ROLE)
+    {
+        holderLimit = _base * 10**_decimals;
     }
 
     function setDripAmount(uint256 _dripbase, uint256 _decimals)

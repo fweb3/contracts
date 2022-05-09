@@ -58,6 +58,16 @@ describe('Matic faucet', () => {
     const receipt = await tx.wait()
     expect(receipt.transactionHash).ok
   })
+  it('should not drip if account above allowed limit', async () => {
+    let error
+    try {
+      await faucet.setHolderLimit(1, 18)
+      await faucet.drip(user2.address)
+    } catch (err: any) {
+      error = err
+    }
+    expect(error?.message.includes('HOLDER_LIMIT'))
+  })
   it('should not drip without min required fweb3 tokens', async () => {
     let error
     try {

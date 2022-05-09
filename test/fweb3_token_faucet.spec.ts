@@ -19,7 +19,7 @@ describe('fweb3 token faucet', () => {
     token = await TokenFactory.deploy()
     await token.deployed()
     const FaucetFactory = await ethers.getContractFactory('Fweb3TokenFaucet')
-    faucet = await FaucetFactory.deploy(token.address, 100, 18, 0, false, 100)
+    faucet = await FaucetFactory.deploy(token.address, 100, 18, 0, false, 0)
     await faucet.deployed()
 
     await owner.sendTransaction({
@@ -36,6 +36,17 @@ describe('fweb3 token faucet', () => {
     const tx = await faucet.drip(user1.address)
     const { transactionHash } = await tx.wait()
     expect(transactionHash).ok
+  })
+  it('wont drip above the holders allowed limit', async () => {
+    let error
+    try {
+      await faucet.setHolderLimit(3, 18)
+      await token.transfer(user1.address, ethers.utils.parseEther('100'))
+      await faucet.drip(user1.address)
+    } catch (err: any) {
+      error = err
+    }
+    expect(error.message.includes('HOLDER_LIMIT'))
   })
   it('wont drip when disabled', async () => {
     let error
