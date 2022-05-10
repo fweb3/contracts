@@ -3,7 +3,7 @@ import hre from 'hardhat'
 
 import { writeAddressToFile, copyContractInterface } from './utils'
 
-const CONTRACT_NAME = 'Fweb3DiamondNFT'
+const CONTRACT_NAME = 'Fweb3Diamond'
 
 const deployFweb3DiamondNFT = async (): Promise<string> => {
   try {
@@ -12,9 +12,8 @@ const deployFweb3DiamondNFT = async (): Promise<string> => {
     const fweb3DiamondNFT: Contract = await Fweb3DiamondNFTFactory.deploy()
     await fweb3DiamondNFT.deployed()
     const fweb3DiamondNFTAddress = fweb3DiamondNFT.address
-    writeAddressToFile('fweb3_diamond_nft', fweb3DiamondNFTAddress)
-    console.log('diamond diamond nft address:', fweb3DiamondNFTAddress)
-    copyContractInterface(CONTRACT_NAME)
+    writeAddressToFile('original_fweb3_diamond_nft', fweb3DiamondNFTAddress)
+    console.log('original diamond diamond nft address:', fweb3DiamondNFTAddress)
     return fweb3DiamondNFTAddress
   } catch (e) {
     console.error(e)
