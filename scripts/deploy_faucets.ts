@@ -4,6 +4,7 @@ import { deployFweb3Token } from './fweb3_token_deploy';
 // import { readAddressFromFile } from './utils'
 
 ;(async () => {
+  console.log('RUNNING FAUCET DEPLOY')
   // const fweb3TokenAddress = readAddressFromFile('fweb3_token')
   const fweb3TokenAddress = await deployFweb3Token()
   const maticFaucetAddress = await deployMaticFaucet(fweb3TokenAddress)
