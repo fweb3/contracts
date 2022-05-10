@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 /**
  * @title Fweb3TokenFaucet
  * @dev ContractDescription
