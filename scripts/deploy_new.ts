@@ -4,7 +4,7 @@ import hre from 'hardhat'
 import { writeAddressToFile, copyContractInterface } from './utils'
 
 // const CONTRACT_NAME = 'Fweb3Diamond'
-const CONTRACT_NAME = 'Fweb3Poll'
+const CONTRACT_NAME = 'Fweb3Trophy'
 const TOKEN_ADDRESS = '0x56a01c1B8C8599Ba5B5A51613BE6704651E8a22e' // MUMBAI
 const FILE_NAME = 'fweb3_poll'
 const deployNewContract = async (): Promise<string> => {

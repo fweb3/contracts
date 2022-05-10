@@ -7,7 +7,7 @@ import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 import '@openzeppelin/contracts/utils/Base64.sol';
 
-interface Game {
+interface IGame {
     function isWinner(address player) external view returns (bool);
 }
 
@@ -23,7 +23,7 @@ contract Fweb3TrophyNFT is ERC721 {
     }
 
     function isWinner(address player) public view returns (bool) {
-        Game game = Game(_gameAddress);
+        IGame game = IGame(_gameAddress);
         return game.isWinner(player);
     }
 
