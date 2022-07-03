@@ -4,7 +4,7 @@ pragma solidity ^0.8.2;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract Game is Ownable {
+contract OriginalGame is Ownable {
   IERC20 private _token;
   address [] judges;
 

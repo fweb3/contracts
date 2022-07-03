@@ -14,6 +14,7 @@
     "coverage:clean": "yarn hh:build && yarn hh coverage",
     "coverage:badges": "yarn coverage:clean && istanbul-badges-readme",
     "test:ci": "yarn hh:ci compile && yarn hh:ci coverage && istanbul-badges-readme",
+    "deploy:game": "yarn hh run scripts/deploy_game.ts",
     "deploy:local": "yarn hh run scripts/deploy_faucets.ts --network localhost",
     "deploy:mumbai": "yarn hh run scripts/deploy_faucets.ts --network mumbai",
     "setup:local": "yarn hh run scripts/setup.ts --network localhost",

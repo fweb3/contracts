@@ -1,6 +1,7 @@
-import { ethers } from 'hardhat'
 import { Contract, ContractFactory } from 'ethers'
+import { ethers } from 'hardhat'
 import fs from 'fs-extra'
+
 ;(async () => {
   try {
     const adminNFTAddress = fs.readFileSync(

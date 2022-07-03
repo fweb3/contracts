@@ -11,7 +11,7 @@ interface IGame {
     function isWinner(address player) external view returns (bool);
 }
 
-contract Fweb3TrophyNFT is ERC721 {
+contract NewFweb3TrophyNFT is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     address private _gameAddress;

@@ -1,9 +1,9 @@
+import { HardhatUserConfig } from 'hardhat/types'
 import '@nomiclabs/hardhat-etherscan'
 import '@nomiclabs/hardhat-waffle'
 import '@typechain/hardhat'
-import 'solidity-coverage'
-import { HardhatUserConfig } from 'hardhat/types'
 import dotenv from 'dotenv'
+import 'solidity-coverage'
 // import 'hardhat-ethernal'
 // import hre from 'hardhat'
 

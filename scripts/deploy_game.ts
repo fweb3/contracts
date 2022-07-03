@@ -45,9 +45,9 @@ import { backupAddresses } from './utils'
     const pollAddress = await deployFweb3Poll(fweb3TokenAddress)
     const diamondNft = await deployFweb3DiamondNFT()
     const trophyNft = await deployFweb3TrophyNFT(gameAddress)
-    const adminNft = await deployFweb3AdminNFT()
-    const maticFaucetAddress = await deployMaticFaucet(fweb3TokenAddress)
-    const fweb3FaucetAddress = await deployFweb3Faucet(fweb3TokenAddress)
+    // const adminNft = await deployFweb3AdminNFT()
+    // const maticFaucetAddress = await deployMaticFaucet(fweb3TokenAddress)
+    // const fweb3FaucetAddress = await deployFweb3Faucet(fweb3TokenAddress)
 
     const addresses = {
       fweb3TokenAddress,
@@ -55,9 +55,9 @@ import { backupAddresses } from './utils'
       pollAddress,
       diamondNft,
       trophyNft,
-      adminNft,
-      maticFaucetAddress,
-      fweb3FaucetAddress,
+      // adminNft,
+      // maticFaucetAddress,
+      // fweb3FaucetAddress,
     }
     // await _sendToEthernal(addresses)
     console.log('deployed contracts!')
